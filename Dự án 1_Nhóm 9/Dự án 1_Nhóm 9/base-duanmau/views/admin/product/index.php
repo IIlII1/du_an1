@@ -947,7 +947,7 @@
                 <td><?= $pro["stock"] ?></td>
                 <td><?= $pro["created_at"] ?></td>
                 <td><a class="btn btn-success" href="?mode=admin&action=showEditForm&id=<?= $pro["product_id"] ?>">Sửa</a></td>
-                <td><a class="btn btn-danger" href="?mode=admin&action=deletePro&id=<?= $pro["product_id"] ?>">Xóa</a></td>
+                <td><a class="btn btn-danger" href="?mode=admin&action=deletePro&id=<?= $pro["product_id"] ?>" onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');">Xóa</a></td>
             </tr>
         <?php }?>
         </tbody>
