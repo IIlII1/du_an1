@@ -43,6 +43,18 @@
             </div>
 
             <div class="form-group">
+              <label for="size_id">Kích thước</label>
+              <select class="form-control" id="size_id" name="size_id" required>
+                <option value="">-- Chọn kích thước --</option>
+                <?php foreach ($sizes as $size): ?>
+                  <option value="<?= htmlspecialchars($size['size_id']) ?>" <?= (string)$size['size_id'] === (string)$product['size_id'] ? 'selected' : '' ?>>
+                    <?= htmlspecialchars($size['size_name']) ?>
+                  </option>
+                <?php endforeach; ?>
+              </select>
+            </div>
+
+            <div class="form-group">
               <label for="description">Mô tả</label>
               <textarea class="form-control" id="description" name="description" rows="4"><?= htmlspecialchars($product['description']) ?></textarea>
             </div>

@@ -22,6 +22,8 @@ class UpdateController
         $pdo = new PDO(sprintf('mysql:host=%s;port=%s;dbname=%s;charset=utf8', DB_HOST, DB_PORT, DB_NAME), DB_USERNAME, DB_PASSWORD, DB_OPTIONS);
         $stmt = $pdo->query('SELECT cate_id, cate_name FROM categories ORDER BY cate_id');
         $categories = $stmt->fetchAll();
+        $stmt = $pdo->query('SELECT size_id, size_name FROM sizes ORDER BY size_id');
+        $sizes = $stmt->fetchAll();
 
         require_once PATH_VIEW_ADMIN . 'product/edit.php';
     }
@@ -36,13 +38,14 @@ class UpdateController
         $id = (int) ($_POST['product_id'] ?? 0);
         $productName = trim($_POST['product_name'] ?? '');
         $cateId = trim($_POST['cate_id'] ?? '');
+        $sizeId = trim($_POST['size_id'] ?? '');
         $description = trim($_POST['description'] ?? '');
         $price = (float) ($_POST['price'] ?? 0);
         $stock = (int) ($_POST['stock'] ?? 0);
         $createdAtInput = trim($_POST['created_at'] ?? '');
         $createdAt = $createdAtInput !== '' ? date('Y-m-d H:i:s', strtotime($createdAtInput)) : date('Y-m-d H:i:s');
 
-        if ($id <= 0 || $productName === '' || $cateId === '' || $price <= 0 || $stock < 0) {
+        if ($id <= 0 || $productName === '' || $cateId === '' || $sizeId === '' || $price <= 0 || $stock < 0) {
             $_SESSION['error'] = 'Vui lòng nhập đầy đủ thông tin sản phẩm.';
             header('Location: ' . BASE_URL . '?mode=admin&action=showEditForm&id=' . $id);
             exit;
@@ -58,6 +61,15 @@ class UpdateController
             exit;
         }
 
+        $stmt = $pdo->prepare('SELECT size_id FROM sizes WHERE size_id = :size_id');
+        $stmt->execute([':size_id' => $sizeId]);
+
+        if (!$stmt->fetch()) {
+            $_SESSION['error'] = 'Kích thước không tồn tại.';
+            header('Location: ' . BASE_URL . '?mode=admin&action=showEditForm&id=' . $id);
+            exit;
+        }
+
         $imgPath = '';
         if (!empty($_FILES['img']['name'])) {
             $imgPath = upload_file('products', $_FILES['img']);
@@ -65,6 +77,7 @@ class UpdateController
 
         $this->proModel->updatePro($id, [
             'cate_id' => $cateId,
+            'size_id' => $sizeId,
             'product_name' => $productName,
             'description' => $description,
             'price' => $price,

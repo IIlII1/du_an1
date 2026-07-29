@@ -920,6 +920,7 @@
                 <th>Tên sản phẩm</th>
                 <th>Bộ sưu tập</th>
                 <th>Mô tả</th>
+                <th>Size</th>
                 <th>Giá sản phẩm </th>
                 <th>Ảnh sản phẩm </th>
                 <th>Số lượng </th>
@@ -940,6 +941,7 @@
                 <td><?= $pro["product_name"] ?></td>
                 <td><?= $pro["cate_id"] ?></td>
                 <td><?= $pro["description"] ?></td>
+                <td><?= $pro["size_id"] ?></td>
                 <td><?= $pro["price"]."฿" ?></td>
                 <td>
                     <img src="<?= !empty($pro['img']) ? BASE_ASSETS_UPLOADS . $pro['img'] : 'dist/img/default-150x150.png' ?>" alt="<?= $pro['product_name'] ?>" width="80">
