@@ -192,10 +192,10 @@
       <!-- Sidebar user panel (optional) -->
       <div class="user-panel mt-3 pb-3 mb-3 d-flex">
         <div class="image">
-          <img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
+          <img src="https://tuanluupiano.com/wp-content/uploads/2026/02/hamster-meme-9.jpg" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-          <a href="#" class="d-block">Alexander Pierce</a>
+          <a href="#" class="d-block">Nhóm 9</a>
         </div>
       </div>
 
@@ -233,20 +233,12 @@
               </li>
             </ul>
           </li>
-          
-          
-          
-          
          
-          
           <li class="nav-header">USERS</li>
           <li class="nav-item">
-            <a href="pages/calendar.html" class="nav-link">
-              <i class="nav-icon far fa-calendar-alt"></i>
-              <p>
-                Quản Lý Tài Khoản
-                
-              </p>
+            <a href="?mode=admin&action=users" class="nav-link">
+              <i class="nav-icon far fa-user"></i>
+              <p>Quản Lý Tài Khoản</p>
             </a>
           </li>
            <li class="nav-header">CART</li>
@@ -290,7 +282,7 @@
         </div><!-- /.row -->
       </div><!-- /.container-fluid -->
     </div>
-   
+    
 
         <a href="?mode=admin&action=showAddForm" class="btn btn-primary btn-lg btn-block">Thêm sản phẩm</a>
           <br> <hr>

@@ -9,5 +9,6 @@ match ($action) {
     'addPro' => (new AddController())->addPro(),
     'showEditForm' => (new UpdateController())->showForm(),
     'editPro' => (new UpdateController())->updatePro(),
+    'users' => (new UserController())->index(),
     default => (new ProController())->index(),
 };

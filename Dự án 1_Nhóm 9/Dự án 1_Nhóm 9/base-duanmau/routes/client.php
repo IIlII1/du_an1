@@ -32,6 +32,26 @@ switch ($action) {
         $cartController = new CartController();
         $cartController->placeOrder();
         break;
+    case 'login':
+        $authController = new AuthController();
+        $authController->showForm('login');
+        break;
+    case 'register':
+        $authController = new AuthController();
+        $authController->showForm('register');
+        break;
+    case 'doRegister':
+        $authController = new AuthController();
+        $authController->register();
+        break;
+    case 'doLogin':
+        $authController = new AuthController();
+        $authController->login();
+        break;
+    case 'logout':
+        $authController = new AuthController();
+        $authController->logout();
+        break;
     default:
         $controller->index();
         break;

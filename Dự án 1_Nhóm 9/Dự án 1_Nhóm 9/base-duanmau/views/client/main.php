@@ -14,6 +14,13 @@
             <a class="nav-link" href="?mode=client">Trang chủ</a>
             <a class="nav-link" href="?mode=client&action=cart">Giỏ hàng</a>
             <a class="nav-link" href="?mode=client&action=checkout">Thanh toán</a>
+            <?php if (!empty($_SESSION['user'])): ?>
+                <span class="nav-link text-white">Xin chào, <?= htmlspecialchars($_SESSION['user']['name']) ?></span>
+                <a class="nav-link" href="?mode=client&action=logout">Đăng xuất</a>
+            <?php else: ?>
+                <a class="nav-link" href="?mode=client&action=login">Đăng nhập</a>
+                <a class="nav-link" href="?mode=client&action=register">Đăng ký</a>
+            <?php endif; ?>
         </div>
     </div>
 </nav>
