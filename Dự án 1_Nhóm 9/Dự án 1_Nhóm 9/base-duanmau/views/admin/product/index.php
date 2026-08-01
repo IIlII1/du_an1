@@ -51,6 +51,13 @@
 
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="?mode=client&action=cart" role="button">
+          <i class="fas fa-shopping-cart"></i>
+          <?php $cartCount = isset($_SESSION['cart']) ? array_sum(array_column($_SESSION['cart'], 'quantity')) : 0; ?>
+          <span class="badge badge-info navbar-badge"><?= $cartCount ?></span>
+        </a>
+      </li>
       <!-- Navbar Search -->
       <li class="nav-item">
         <a class="nav-link" data-widget="navbar-search" href="#" role="button">
@@ -324,7 +331,14 @@
                 <td><?= $pro["size_id"] ?></td>
                 <td><?= $pro["price"]."฿" ?></td>
                 <td>
-                    <img src="<?= !empty($pro['img']) ? BASE_ASSETS_UPLOADS . $pro['img'] : 'dist/img/default-150x150.png' ?>" alt="<?= $pro['product_name'] ?>" width="80">
+                    <?php
+                        $imgSrc = !empty($pro['img']) ? BASE_ASSETS_UPLOADS . $pro['img'] : 'dist/img/default-150x150.png';
+                        $imgPath = !empty($pro['img']) ? PATH_ROOT . 'assets/uploads/' . $pro['img'] : '';
+                        if (!empty($imgPath) && !file_exists($imgPath)) {
+                            $imgSrc = 'dist/img/default-150x150.png';
+                        }
+                    ?>
+                    <img src="<?= $imgSrc ?>" alt="<?= $pro['product_name'] ?>" width="80">
                 </td>
                 <td><?= $pro["stock"] ?></td>
                 <td><?= $pro["created_at"] ?></td>
