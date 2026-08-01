@@ -20,6 +20,14 @@ class ProModel extends BaseModel
         return $stmt->fetch();
     }
 
+    public function getTop4Lastest()
+    {
+        $sql = "SELECT * FROM products ORDER BY created_at DESC LIMIT 4";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
     public function addPro($data)
     {
         $sql = "INSERT INTO products (cate_id, size_id, product_name, description, price, img, stock, created_at) VALUES (:cate_id, :size_id, :product_name, :description, :price, :img, :stock, :created_at)";
