@@ -51,13 +51,7 @@
 
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
-      <li class="nav-item">
-        <a class="nav-link" href="?mode=client&action=cart" role="button">
-          <i class="fas fa-shopping-cart"></i>
-          <?php $cartCount = isset($_SESSION['cart']) ? array_sum(array_column($_SESSION['cart'], 'quantity')) : 0; ?>
-          <span class="badge badge-info navbar-badge"><?= $cartCount ?></span>
-        </a>
-      </li>
+      <!-- Cart icon removed from topbar; cart accessible from sidebar -->
       <!-- Navbar Search -->
       <li class="nav-item">
         <a class="nav-link" data-widget="navbar-search" href="#" role="button">
@@ -241,13 +235,12 @@
               <p>Quản Lý Tài Khoản</p>
             </a>
           </li>
-           <li class="nav-header">CART</li>
+          <li class="nav-header">CART</li>
           <li class="nav-item">
-            <a href="pages/calendar.html" class="nav-link">
-              <i class="nav-icon far fa-calendar-alt"></i>
+            <a href="?mode=client&action=cart" class="nav-link">
+              <i class="nav-icon fas fa-shopping-cart"></i>
               <p>
                 Quản Lý Giỏ Hàng
-                
               </p>
             </a>
           </li>
