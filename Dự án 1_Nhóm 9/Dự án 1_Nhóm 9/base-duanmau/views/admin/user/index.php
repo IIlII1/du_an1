@@ -8,25 +8,21 @@
 </head>
 <body>
 <div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2>Quản lý tài khoản</h2>
-        <a href="?mode=admin" class="btn btn-secondary">Quay lại</a>
-    </div>
-
-    <div class="card shadow-sm">
+    <h2>Quản lý tài khoản</h2>
+    <div class="card mt-3">
         <div class="card-body">
-            <table class="table table-bordered table-hover mb-0">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>ID</th>
-                        <th>Họ tên</th>
-                        <th>Email</th>
-                        <th>Số điện thoại</th>
-                        <th>Vai trò</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (!empty($users)): ?>
+            <?php if (!empty($users)): ?>
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Họ tên</th>
+                            <th>Email</th>
+                            <th>Số điện thoại</th>
+                            <th>Vai trò</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                         <?php foreach ($users as $user): ?>
                             <tr>
                                 <td><?= htmlspecialchars($user['user_id']) ?></td>
@@ -36,13 +32,11 @@
                                 <td><?= htmlspecialchars($user['role']) ?></td>
                             </tr>
                         <?php endforeach; ?>
-                    <?php else: ?>
-                        <tr>
-                            <td colspan="5" class="text-center">Chưa có tài khoản nào.</td>
-                        </tr>
-                    <?php endif; ?>
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            <?php else: ?>
+                <p>Không có tài khoản nào.</p>
+            <?php endif; ?>
         </div>
     </div>
 </div>

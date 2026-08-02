@@ -12,7 +12,7 @@ class AuthController
     public function showForm($type = 'login')
     {
         if (!empty($_SESSION['user'])) {
-            header('Location: ' . BASE_URL . '?mode=client');
+            header('Location: ' . BASE_URL . '?mode=users');
             exit;
         }
 
@@ -91,7 +91,7 @@ class AuthController
                 'role' => $user['role'],
             ];
             $_SESSION['success'] = 'Đăng nhập thành công.';
-            header('Location: ' . BASE_URL . '?mode=client');
+            header('Location: ' . BASE_URL . '?mode=users');
             exit;
         }
 
