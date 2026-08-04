@@ -32,9 +32,21 @@
         .hero-button { border-radius: 999px; padding: 14px 32px; font-weight: 700; background: rgba(255,255,255,0.94); color: #111; border: none; box-shadow: 0 18px 35px rgba(0,0,0,0.12); }
         .hero-button:hover { background: #111; color: #fff; }
         main { padding-top: 160px; }
-        .product-card { border: none; border-radius: 20px; overflow: hidden; transition: transform .25s ease, box-shadow .25s ease; }
-        .product-card:hover { transform: translateY(-8px); box-shadow: 0 30px 50px rgba(0,0,0,0.08); }
-        .product-tag { color: rgba(255,255,255,0.7); text-transform: uppercase; font-size: .75rem; letter-spacing: .2em; margin-bottom: .75rem; }
+        .product-card { border: none; border-radius: 32px; overflow: hidden; transition: transform .3s ease, box-shadow .3s ease; background: #fff; }
+        .product-card:hover { transform: translateY(-8px); box-shadow: 0 28px 60px rgba(0,0,0,0.12); }
+        .product-thumb { position: relative; overflow: hidden; min-height: 280px; display: flex; align-items: center; justify-content: center; background: #f7f2e9; }
+        .product-thumb img { width: 100%; height: 100%; object-fit: contain; transition: transform .35s ease; }
+        .product-thumb:hover img { transform: scale(1.05); }
+        .product-badge { position: absolute; top: 16px; right: 16px; padding: .45rem .8rem; border-radius: 999px; background: #111; color: #fff; font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; }
+        .product-actions { position: absolute; bottom: 16px; right: 16px; display: flex; gap: .5rem; }
+        .product-action { width: 42px; height: 42px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.08); background: #fff; display: inline-flex; align-items: center; justify-content: center; color: #111; font-size: 1rem; line-height: 1; transition: transform .2s ease, background .2s ease, color .2s ease; }
+        .product-action:hover { background: #111; color: #fff; transform: translateY(-2px); text-decoration: none; }
+        .product-body { min-height: 130px; }
+        .product-name { font-size: 1rem; font-weight: 700; color: #111; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: .02em; }
+        .product-info-row { display: flex; justify-content: space-between; align-items: center; gap: .75rem; flex-wrap: wrap; }
+        .product-price { font-size: 1.02rem; font-weight: 800; color: #111; }
+        .product-option { border-radius: 999px; padding: .6rem 1rem; border: 1px solid rgba(0,0,0,0.12); color: #111; font-size: .82rem; text-transform: uppercase; letter-spacing: .1em; transition: background .2s ease, color .2s ease; text-decoration: none; }
+        .product-option:hover { background: #111; color: #fff; }
         .footer { background: #111; color: #d3cfc7; }
         .footer a { color: #f6f2eb; }
     </style>

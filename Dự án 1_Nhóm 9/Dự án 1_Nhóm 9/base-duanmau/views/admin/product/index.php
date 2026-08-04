@@ -314,7 +314,7 @@
                 <td><?= $pro["cate_id"] ?></td>
                 <td><?= $pro["description"] ?></td>
                 <td><?= $pro["size_id"] ?></td>
-                <td><?= $pro["price"]."฿" ?></td>
+                <td><?= number_format($pro["price"], 0, ',', '.') ?>₫</td>
                 <td>
                     <?php
                         $imgSrc = !empty($pro['img']) ? BASE_ASSETS_UPLOADS . $pro['img'] : 'dist/img/default-150x150.png';
