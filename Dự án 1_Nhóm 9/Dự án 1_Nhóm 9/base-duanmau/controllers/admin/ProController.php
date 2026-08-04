@@ -18,7 +18,10 @@ class ProController
     {
         $id = $_GET['id'] ?? 0;
         if ($id) {
-            $this->proModel->deletePro($id);
+            $deleted = $this->proModel->deletePro($id);
+            if (!$deleted) {
+                $_SESSION['admin_error'] = 'Không thể xóa sản phẩm do vẫn có tham chiếu liên quan.';
+            }
         }
 
         header('Location: ' . BASE_URL . '?mode=admin');

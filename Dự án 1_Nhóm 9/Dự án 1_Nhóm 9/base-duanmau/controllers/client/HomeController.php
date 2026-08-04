@@ -13,11 +13,8 @@ class HomeController
         $view = 'home';
         $query = trim($_GET['q'] ?? '');
 
-        if ($query !== '') {
-            $data = $this->productModel->searchByName($query);
-        } else {
-            $data = $this->productModel->getLatestProducts();
-        }
+        $newArrivals = $this->productModel->getProductsByCategoryName('Invisible Fence');
+        $data = $query !== '' ? $this->productModel->searchByName($query) : $this->productModel->getLatestProducts();
 
         require_once PATH_VIEW_CLIENT . 'main.php';
     }

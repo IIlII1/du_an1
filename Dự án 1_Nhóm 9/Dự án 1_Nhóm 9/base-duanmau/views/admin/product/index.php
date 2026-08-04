@@ -285,6 +285,12 @@
               <?php unset($_SESSION['success']); ?>
             </div>
           <?php endif; ?>
+          <?php if (!empty($_SESSION['admin_error'])): ?>
+            <div class="alert alert-danger">
+              <?= htmlspecialchars($_SESSION['admin_error']) ?>
+              <?php unset($_SESSION['admin_error']); ?>
+            </div>
+          <?php endif; ?>
           <table class="table">
         <thead class="table-dark" >
             <tr>

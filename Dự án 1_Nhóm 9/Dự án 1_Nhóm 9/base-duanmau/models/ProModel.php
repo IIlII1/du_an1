@@ -11,15 +11,24 @@ class ProModel extends BaseModel
 
     public function getLatestProducts()
     {
-        $sql = "SELECT * FROM `products` ORDER BY created_at DESC";
+        $sql = "SELECT p.*, c.cate_name AS category_name FROM `products` p JOIN `categories` c ON p.cate_id = c.cate_id ORDER BY p.created_at DESC";
         $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    public function getProductsByCategoryName($categoryName)
+    {
+        $sql = "SELECT p.*, c.cate_name AS category_name FROM `products` p JOIN `categories` c ON p.cate_id = c.cate_id WHERE LOWER(c.cate_name) = LOWER(:cate_name) ORDER BY p.created_at DESC";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':cate_name', $categoryName);
         $stmt->execute();
         return $stmt->fetchAll();
     }
 
     public function searchByName($keyword)
     {
-        $sql = "SELECT * FROM `products` WHERE product_name LIKE :keyword OR description LIKE :keyword ORDER BY created_at DESC";
+        $sql = "SELECT p.*, c.cate_name AS category_name FROM `products` p JOIN `categories` c ON p.cate_id = c.cate_id WHERE p.product_name LIKE :keyword OR p.description LIKE :keyword ORDER BY p.created_at DESC";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':keyword', '%' . $keyword . '%');
         $stmt->execute();
@@ -37,9 +46,10 @@ class ProModel extends BaseModel
 
     public function addPro($data)
     {
-        $sql = "INSERT INTO products (cate_id, product_name, description, price, img, stock, created_at) VALUES (:cate_id, :product_name, :description, :price, :img, :stock, :created_at)";
+        $sql = "INSERT INTO products (cate_id, size_id, product_name, description, price, img, stock, created_at) VALUES (:cate_id, :size_id, :product_name, :description, :price, :img, :stock, :created_at)";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':cate_id', $data['cate_id']);
+        $stmt->bindValue(':size_id', $data['size_id']);
         $stmt->bindValue(':product_name', $data['product_name']);
         $stmt->bindValue(':description', $data['description']);
         $stmt->bindValue(':price', $data['price']);
@@ -51,7 +61,7 @@ class ProModel extends BaseModel
 
     public function updatePro($id, $data)
     {
-        $sql = "UPDATE products SET cate_id = :cate_id, product_name = :product_name, description = :description, price = :price, stock = :stock, created_at = :created_at";
+        $sql = "UPDATE products SET cate_id = :cate_id, size_id = :size_id, product_name = :product_name, description = :description, price = :price, stock = :stock, created_at = :created_at";
 
         if (!empty($data['img'])) {
             $sql .= ", img = :img";
@@ -61,6 +71,7 @@ class ProModel extends BaseModel
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':cate_id', $data['cate_id']);
+        $stmt->bindValue(':size_id', $data['size_id']);
         $stmt->bindValue(':product_name', $data['product_name']);
         $stmt->bindValue(':description', $data['description']);
         $stmt->bindValue(':price', $data['price']);
@@ -77,10 +88,35 @@ class ProModel extends BaseModel
 
     public function deletePro($id)
     {
-        $sql = "DELETE FROM products WHERE `products`.`product_id` = :id";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->bindParam(':id', $id);
-        $stmt->execute();
+        try {
+            $this->pdo->beginTransaction();
+
+            $dependentTables = [
+                'wishlist',
+                'product_img',
+                'product_size',
+                'comments',
+                'cart_detail'
+            ];
+
+            foreach ($dependentTables as $table) {
+                $sql = "DELETE FROM {$table} WHERE product_id = :id";
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+                $stmt->execute();
+            }
+
+            $sql = "DELETE FROM products WHERE product_id = :id";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+
+            $this->pdo->commit();
+            return true;
+        } catch (PDOException $e) {
+            $this->pdo->rollBack();
+            return false;
+        }
     }
 }
 ?>
