@@ -8,11 +8,17 @@ class HomeController
         $this->productModel = new ProModel();
     }
 
-    public function index() 
-    {   
+    public function index()
+    {
         $view = 'home';
-        $data = $this->productModel->getTop4Lastest();
-        // debug($data);
+        $query = trim($_GET['q'] ?? '');
+
+        if ($query !== '') {
+            $data = $this->productModel->searchByName($query);
+        } else {
+            $data = $this->productModel->getLatestProducts();
+        }
+
         require_once PATH_VIEW_CLIENT . 'main.php';
     }
 }

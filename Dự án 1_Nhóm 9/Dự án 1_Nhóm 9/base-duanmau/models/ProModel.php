@@ -3,10 +3,25 @@ class ProModel extends BaseModel
 {
     public function getAll()
     {
-        $sql = "SELECT p.*, c.cate_name, s.size_name FROM products p
-                LEFT JOIN categories c ON p.cate_id = c.cate_id
-                LEFT JOIN sizes s ON p.size_id = s.size_id";
+        $sql = "SELECT * FROM `products`";
         $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    public function getLatestProducts()
+    {
+        $sql = "SELECT * FROM `products` ORDER BY created_at DESC";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    public function searchByName($keyword)
+    {
+        $sql = "SELECT * FROM `products` WHERE product_name LIKE :keyword OR description LIKE :keyword ORDER BY created_at DESC";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':keyword', '%' . $keyword . '%');
         $stmt->execute();
         return $stmt->fetchAll();
     }
@@ -20,20 +35,11 @@ class ProModel extends BaseModel
         return $stmt->fetch();
     }
 
-    public function getTop4Lastest()
-    {
-        $sql = "SELECT * FROM products ORDER BY created_at DESC LIMIT 4";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute();
-        return $stmt->fetchAll();
-    }
-
     public function addPro($data)
     {
-        $sql = "INSERT INTO products (cate_id, size_id, product_name, description, price, img, stock, created_at) VALUES (:cate_id, :size_id, :product_name, :description, :price, :img, :stock, :created_at)";
+        $sql = "INSERT INTO products (cate_id, product_name, description, price, img, stock, created_at) VALUES (:cate_id, :product_name, :description, :price, :img, :stock, :created_at)";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':cate_id', $data['cate_id']);
-        $stmt->bindValue(':size_id', $data['size_id']);
         $stmt->bindValue(':product_name', $data['product_name']);
         $stmt->bindValue(':description', $data['description']);
         $stmt->bindValue(':price', $data['price']);
@@ -45,7 +51,7 @@ class ProModel extends BaseModel
 
     public function updatePro($id, $data)
     {
-        $sql = "UPDATE products SET cate_id = :cate_id, size_id = :size_id, product_name = :product_name, description = :description, price = :price, stock = :stock, created_at = :created_at";
+        $sql = "UPDATE products SET cate_id = :cate_id, product_name = :product_name, description = :description, price = :price, stock = :stock, created_at = :created_at";
 
         if (!empty($data['img'])) {
             $sql .= ", img = :img";
@@ -55,7 +61,6 @@ class ProModel extends BaseModel
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':cate_id', $data['cate_id']);
-        $stmt->bindValue(':size_id', $data['size_id']);
         $stmt->bindValue(':product_name', $data['product_name']);
         $stmt->bindValue(':description', $data['description']);
         $stmt->bindValue(':price', $data['price']);
