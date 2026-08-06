@@ -2,6 +2,7 @@
 $cartItems = $cartItems ?? [];
 $total = $total ?? 0;
 ?>
+<br><br>
 <div class="container py-5">
     <h2 class="mb-4">Giỏ hàng của bạn</h2>
 
