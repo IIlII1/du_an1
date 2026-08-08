@@ -155,7 +155,7 @@ class UserModel extends BaseModel
         return (int) ($row['max_id'] ?? 0) + 1;
     }
 
-<<<<<<< HEAD
+
     public function createOrderWithDetails(int $userId, float $total, array $items, string $paymentMethod, string $paymentStatus): int
     {
         $this->beginTransaction();
@@ -262,92 +262,6 @@ class UserModel extends BaseModel
         $stmt->execute();
         return $stmt->fetchAll();
     }
-=======
-   public function getOrdersByUser(int $userId): array
-{
-    $sql = "
-        SELECT *
-        FROM orders
-        WHERE user_id = :user_id
-        ORDER BY order_id DESC
-    ";
-
-    $stmt = $this->pdo->prepare($sql);
-
-    $stmt->bindValue(
-        ':user_id',
-        $userId,
-        PDO::PARAM_INT
-    );
-
-    $stmt->execute();
-
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
-
-
-public function getOrderById(
-    int $orderId,
-    int $userId
-) {
-    $sql = "
-        SELECT *
-        FROM orders
-        WHERE order_id = :order_id
-        AND user_id = :user_id
-        LIMIT 1
-    ";
-
-    $stmt = $this->pdo->prepare($sql);
-
-    $stmt->bindValue(
-        ':order_id',
-        $orderId,
-        PDO::PARAM_INT
-    );
-
-    $stmt->bindValue(
-        ':user_id',
-        $userId,
-        PDO::PARAM_INT
-    );
-
-    $stmt->execute();
-
-    return $stmt->fetch(PDO::FETCH_ASSOC);
-}
-
-
-public function getOrderDetails(
-    int $orderId
-): array {
-
-    $sql = "
-        SELECT
-            od.*,
-            p.product_name,
-            p.img
-        FROM order_details od
-
-        LEFT JOIN products p
-            ON od.product_id = p.product_id
-
-        WHERE od.order_id = :order_id
-    ";
-
-    $stmt = $this->pdo->prepare($sql);
-
-    $stmt->bindValue(
-        ':order_id',
-        $orderId,
-        PDO::PARAM_INT
-    );
-
-    $stmt->execute();
-
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
->>>>>>> 8c12713984b5f03d5d97580439140bfe66b2086e
 
     public function getCommentsByUser(int $userId): array
     {
@@ -387,69 +301,37 @@ public function getOrderDetails(
         return (int) ($row['max_id'] ?? 0) + 1;
     }
     public function updateProfile(
-    int $userId,
-    string $name,
-    string $email,
-    string $phone,
-    string $gender,
-    string $dateOfBirth,
-    string $city,
-    string $district,
-    ?string $avatar
-): bool {
+        int $userId,
+        string $name,
+        string $email,
+        string $phone,
+        ?string $avatar = null
+    ): bool {
 
-    $sql = "
-        UPDATE users
-        SET
-            name = :name,
-            email = :email,
-            phone = :phone,
-            gender = :gender,
-            date_of_birth = :date_of_birth,
-            city = :city,
-            district = :district,
-            avatar = :avatar
-        WHERE user_id = :user_id
-    ";
+        $sql = "
+            UPDATE users
+            SET
+                name = :name,
+                email = :email,
+                phone = :phone";
 
-    $stmt = $this->pdo->prepare($sql);
+        if ($avatar !== null) {
+            $sql .= ",\n                avatar = :avatar";
+        }
 
-    $stmt->bindValue(':name', $name);
-    $stmt->bindValue(':email', $email);
-    $stmt->bindValue(':phone', $phone);
+        $sql .= "\n            WHERE user_id = :user_id\n        ";
 
-    $stmt->bindValue(
-        ':gender',
-        $gender !== '' ? $gender : null,
-        $gender !== '' ? PDO::PARAM_STR : PDO::PARAM_NULL
-    );
+        $stmt = $this->pdo->prepare($sql);
 
-    $stmt->bindValue(
-        ':date_of_birth',
-        $dateOfBirth !== '' ? $dateOfBirth : null,
-        $dateOfBirth !== '' ? PDO::PARAM_STR : PDO::PARAM_NULL
-    );
+        $stmt->bindValue(':name', $name);
+        $stmt->bindValue(':email', $email);
+        $stmt->bindValue(':phone', $phone);
+        $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
 
-    $stmt->bindValue(
-        ':city',
-        $city !== '' ? $city : null,
-        $city !== '' ? PDO::PARAM_STR : PDO::PARAM_NULL
-    );
+        if ($avatar !== null) {
+            $stmt->bindValue(':avatar', $avatar, PDO::PARAM_STR);
+        }
 
-    $stmt->bindValue(
-        ':district',
-        $district !== '' ? $district : null,
-        $district !== '' ? PDO::PARAM_STR : PDO::PARAM_NULL
-    );
-
-    $stmt->bindValue(
-        ':avatar',
-        $avatar !== null ? $avatar : null,
-        $avatar !== null ? PDO::PARAM_STR : PDO::PARAM_NULL
-    );
-
-    $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
-
-    return $stmt->execute();
-}
+        return $stmt->execute();
+    }
 }

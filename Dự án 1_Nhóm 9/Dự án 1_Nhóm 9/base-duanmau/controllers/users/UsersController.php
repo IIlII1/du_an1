@@ -180,11 +180,6 @@ class UsersController
     $email = trim($_POST['email'] ?? '');
     $phone = trim($_POST['phone'] ?? '');
 
-    $gender = trim($_POST['gender'] ?? '');
-    $dateOfBirth = trim($_POST['date_of_birth'] ?? '');
-    $city = trim($_POST['city'] ?? '');
-    $district = trim($_POST['district'] ?? '');
-
     if ($name === '' || $email === '' || $phone === '') {
 
         $_SESSION['error'] = 'Vui lòng nhập đầy đủ họ tên, email và số điện thoại.';
@@ -288,10 +283,6 @@ class UsersController
         $name,
         $email,
         $phone,
-        $gender,
-        $dateOfBirth,
-        $city,
-        $district,
         $avatarName
     );
 
@@ -311,11 +302,7 @@ class UsersController
             'name' => $newUser['name'],
             'email' => $newUser['email'],
             'phone' => $newUser['phone'],
-            'gender' => $newUser['gender'],
-            'date_of_birth' => $newUser['date_of_birth'],
-            'city' => $newUser['city'],
-            'district' => $newUser['district'],
-            'avatar' => $newUser['avatar'],
+            'avatar' => $newUser['avatar'] ?? null,
             'role' => $newUser['role']
         ];
 
