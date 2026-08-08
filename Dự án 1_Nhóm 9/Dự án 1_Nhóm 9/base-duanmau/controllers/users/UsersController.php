@@ -168,5 +168,167 @@ class UsersController
         }
         header('Location: ' . BASE_URL . '?mode=users&action=comments');
         exit;
+        
     }
+    public function updateProfile()
+{
+    $this->ensureLoggedIn();
+
+    $userId = (int) $_SESSION['user']['user_id'];
+
+    $name = trim($_POST['name'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $phone = trim($_POST['phone'] ?? '');
+
+    $gender = trim($_POST['gender'] ?? '');
+    $dateOfBirth = trim($_POST['date_of_birth'] ?? '');
+    $city = trim($_POST['city'] ?? '');
+    $district = trim($_POST['district'] ?? '');
+
+    if ($name === '' || $email === '' || $phone === '') {
+
+        $_SESSION['error'] = 'Vui lòng nhập đầy đủ họ tên, email và số điện thoại.';
+
+        header('Location: ' . BASE_URL . '?mode=users&action=dashboard');
+        exit;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Kiểm tra email
+    |--------------------------------------------------------------------------
+    */
+
+    $oldUser = $this->userModel->getByEmail($email);
+
+    if ($oldUser && (int)$oldUser['user_id'] !== $userId) {
+
+        $_SESSION['error'] = 'Email này đã được sử dụng bởi tài khoản khác.';
+
+        header('Location: ' . BASE_URL . '?mode=users&action=dashboard');
+        exit;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Avatar
+    |--------------------------------------------------------------------------
+    */
+
+    $avatarName = $_SESSION['user']['avatar'] ?? null;
+
+
+    if (
+        isset($_FILES['avatar']) &&
+        $_FILES['avatar']['error'] === UPLOAD_ERR_OK
+    ) {
+
+        $file = $_FILES['avatar'];
+
+        $allowedTypes = [
+            'image/jpeg',
+            'image/png',
+            'image/webp'
+        ];
+
+        if (!in_array($file['type'], $allowedTypes)) {
+
+            $_SESSION['error'] = 'Avatar chỉ được là JPG, PNG hoặc WEBP.';
+
+            header('Location: ' . BASE_URL . '?mode=users&action=dashboard');
+            exit;
+        }
+
+
+        if ($file['size'] > 5 * 1024 * 1024) {
+
+            $_SESSION['error'] = 'Avatar không được vượt quá 5MB.';
+
+            header('Location: ' . BASE_URL . '?mode=users&action=dashboard');
+            exit;
+        }
+
+
+        $avatarFolder = PATH_ASSETS_UPLOADS . 'avatars/';
+
+
+        if (!is_dir($avatarFolder)) {
+
+            mkdir($avatarFolder, 0777, true);
+
+        }
+
+
+        $extension = strtolower(
+            pathinfo($file['name'], PATHINFO_EXTENSION)
+        );
+
+
+        $avatarName = 'avatar_' . $userId . '_' . time() . '.' . $extension;
+
+
+        move_uploaded_file(
+            $file['tmp_name'],
+            $avatarFolder . $avatarName
+        );
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Update database
+    |--------------------------------------------------------------------------
+    */
+
+    $updated = $this->userModel->updateProfile(
+        $userId,
+        $name,
+        $email,
+        $phone,
+        $gender,
+        $dateOfBirth,
+        $city,
+        $district,
+        $avatarName
+    );
+
+
+    if ($updated) {
+
+        /*
+        |--------------------------------------------------------------------------
+        | Cập nhật session
+        |--------------------------------------------------------------------------
+        */
+
+        $newUser = $this->userModel->getById($userId);
+
+        $_SESSION['user'] = [
+            'user_id' => $newUser['user_id'],
+            'name' => $newUser['name'],
+            'email' => $newUser['email'],
+            'phone' => $newUser['phone'],
+            'gender' => $newUser['gender'],
+            'date_of_birth' => $newUser['date_of_birth'],
+            'city' => $newUser['city'],
+            'district' => $newUser['district'],
+            'avatar' => $newUser['avatar'],
+            'role' => $newUser['role']
+        ];
+
+        $_SESSION['success'] = 'Thông tin cá nhân đã được cập nhật.';
+
+    } else {
+
+        $_SESSION['error'] = 'Không thể cập nhật thông tin.';
+
+    }
+
+
+    header('Location: ' . BASE_URL . '?mode=users&action=dashboard');
+    exit;
+}
 }

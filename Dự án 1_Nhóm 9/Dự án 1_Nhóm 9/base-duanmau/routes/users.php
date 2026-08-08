@@ -41,7 +41,11 @@ switch ($action) {
     case 'removeComment':
         $controller->removeComment();
         break;
+    case 'updateProfile':
+        $controller->updateProfile();
+        break;
     default:
         $controller->dashboard();
         break;
+    
 }

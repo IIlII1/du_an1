@@ -53,7 +53,16 @@
         .banner-panel img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .banner-panel-right { display: flex; align-items: center; justify-content: center; }
         .banner-overlay-logo { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 220px; height: auto; pointer-events: none; z-index: 2; }
-        main { padding-top: 160px; }
+        main { padding-top: 220px; scroll-padding-top: 220px; }
+        @media (max-width: 1199.98px) {
+            main { padding-top: 240px; scroll-padding-top: 240px; }
+        }
+        @media (max-width: 991.98px) {
+            main { padding-top: 280px; scroll-padding-top: 280px; }
+        }
+        @media (max-width: 575.98px) {
+            main { padding-top: 320px; scroll-padding-top: 320px; }
+        }
         .product-card { border: 1px solid #f0f0f0; border-radius: 0; overflow: hidden; transition: none; background: #fff; }
         .product-card:hover { transform: none; box-shadow: none; }
         .product-thumb { position: relative; overflow: hidden; width: 100%; height: 280px; display: flex; align-items: center; justify-content: center; background: #fff; }
@@ -85,6 +94,53 @@
         .collection-button { display: inline-flex; align-items: center; gap: .6rem; padding: .75rem 1.4rem; background: rgba(255,255,255,0.15); color: #fff; border-radius: 999px; border: 1px solid rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: .12em; font-weight: 700; font-size: .82rem; text-decoration: none; transition: background .2s ease, transform .2s ease; }
         .collection-button:hover { background: rgba(255,255,255,0.25); transform: translateY(-1px); }
         .product-name { font-size: 1rem; font-weight: 700; color: #111; margin-bottom: .5rem; text-transform: uppercase; letter-spacing: .06em; }
+        .cart-page { padding-top: 5rem; padding-bottom: 4rem; }
+        .cart-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 2rem; }
+        .cart-breadcrumb-link { color: #111; text-transform: uppercase; letter-spacing: .18em; font-weight: 700; text-decoration: none; opacity: .75; }
+        .cart-title { font-size: clamp(2.2rem, 3vw, 3rem); font-weight: 800; margin: 0; }
+        .cart-count { color: rgba(17,17,17,.7); font-size: .95rem; }
+        .cart-items-card { background: #fff; border: 1px solid rgba(0,0,0,.08); padding: 1.5rem; }
+        .cart-item { display: flex; gap: 1.25rem; border-bottom: 1px solid rgba(0,0,0,.06); padding: 1.5rem 0; }
+        .cart-item:last-child { border-bottom: none; }
+        .cart-item-thumb { min-width: 140px; min-height: 140px; border: 1px solid rgba(0,0,0,.08); display: flex; align-items: center; justify-content: center; overflow: hidden; background: #f7f2e9; }
+        .cart-item-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .cart-item-details { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .cart-item-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+        .cart-item-name { font-weight: 800; letter-spacing: .06em; text-transform: uppercase; margin-bottom: .35rem; }
+        .cart-item-subtitle { font-size: .92rem; }
+        .cart-item-price { font-weight: 800; font-size: 1rem; }
+        .cart-item-meta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 1rem; }
+        .cart-quantity { display: flex; flex-direction: column; gap: .5rem; }
+        .cart-quantity label { font-size: .82rem; text-transform: uppercase; letter-spacing: .12em; color: rgba(17,17,17,.65); }
+        .cart-quantity input { width: 100px; padding: .75rem 1rem; border: 1px solid rgba(0,0,0,.12); border-radius: 12px; }
+        .cart-item-actions { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+        .cart-item-total { font-weight: 800; font-size: 1rem; }
+        .cart-remove { color: rgba(17,17,17,.7); text-decoration: none; font-size: .9rem; }
+        .cart-remove:hover { text-decoration: underline; }
+        .cart-form-row { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 1.5rem; margin-top: 1.5rem; }
+        .cart-form-row .btn { min-width: 220px; }
+        .cart-note-field { flex: 1; }
+        .cart-note-field label { display: block; margin-bottom: .5rem; font-size: .92rem; color: rgba(17,17,17,.75); }
+        .cart-note-field textarea { width: 100%; min-height: 120px; border: 1px solid rgba(0,0,0,.12); border-radius: 18px; padding: 1rem 1.15rem; background: #fff; resize: vertical; }
+        .cart-summary-card, .cart-policy-card { background: #fff; border: 1px solid rgba(0,0,0,.08); padding: 1.75rem; margin-bottom: 1.5rem; }
+        .summary-header { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+        .summary-label { text-transform: uppercase; letter-spacing: .18em; font-size: .82rem; color: rgba(17,17,17,.65); }
+        .summary-value { font-size: 1.8rem; font-weight: 900; }
+        .summary-meta { display: grid; gap: .85rem; border-top: 1px solid rgba(0,0,0,.08); padding-top: 1.2rem; margin-bottom: 1.5rem; }
+        .summary-meta div { display: flex; justify-content: space-between; font-size: .95rem; color: rgba(17,17,17,.75); }
+        .summary-total { display: flex; justify-content: space-between; align-items: center; font-weight: 900; font-size: 1.1rem; margin-bottom: 1.5rem; }
+        .btn-black { width: 100%; background: #111; color: #fff; border: none; padding: 1rem 1.25rem; border-radius: 15px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; }
+        .btn-black:hover { background: #000; }
+        .cart-policy-card .policy-header { font-weight: 800; margin-bottom: .75rem; }
+        @media (max-width: 991.98px) {
+            .cart-item { flex-direction: column; }
+            .cart-item-thumb { min-width: auto; width: 100%; }
+        }
+        @media (max-width: 767.98px) {
+            .collections-grid { grid-template-columns: 1fr; }
+            .footer .footer-top { grid-template-columns: 1fr; }
+            .cart-form-row { flex-direction: column; }
+        }
         .product-desc { color: #777; font-size: .95rem; line-height: 1.5; min-height: 2.5rem; margin-bottom: 1rem; }
         .product-info-row { display: flex; justify-content: space-between; align-items: center; gap: .75rem; flex-wrap: wrap; }
         .product-price { font-size: 1.05rem; font-weight: 800; color: #111; }
@@ -109,7 +165,31 @@
         @media (max-width: 575.98px) {
             .footer .footer-top { grid-template-columns: 1fr; }
             .footer .footer-bottom { flex-direction: column; align-items: flex-start; }
+            
         }
+        .header-avatar-link {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,.25);
+    transition: .2s;
+}
+
+.header-avatar-link:hover {
+    border-color: #fff;
+    transform: scale(1.05);
+}
+
+.header-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
     </style>
 </head>
 <body>
@@ -128,12 +208,70 @@
                 <input class="search-input" type="search" name="q" placeholder="Tìm sản phẩm" value="<?= htmlspecialchars($_GET['q'] ?? '') ?>">
                 <button class="search-button" type="submit" title="Tìm kiếm"><i class="bi bi-search"></i></button>
             </form>
-            <a class="icon-link" href="?mode=client&action=cart" title="Giỏ hàng"><i class="bi bi-cart2"></i></a>
             <?php if (!empty($_SESSION['user'])): ?>
-                <a class="login-button" href="?mode=users">Tài khoản</a>
-            <?php else: ?>
-                <a class="login-button" href="?mode=client&action=login">Login</a>
-            <?php endif; ?>
+
+    <?php
+
+    $headerUser = $_SESSION['user'];
+
+    $headerDefaultAvatar =
+        BASE_URL .
+        'dist/img/user1-128x128.jpg';
+
+    if (!empty($headerUser['avatar'])) {
+
+        $headerAvatarPath =
+            PATH_ASSETS_UPLOADS .
+            'avatars/' .
+            $headerUser['avatar'];
+
+        if (file_exists($headerAvatarPath)) {
+
+            $headerAvatar =
+                BASE_ASSETS_UPLOADS .
+                'avatars/' .
+                rawurlencode(
+                    $headerUser['avatar']
+                );
+
+        } else {
+
+            $headerAvatar =
+                $headerDefaultAvatar;
+        }
+
+    } else {
+
+        $headerAvatar =
+            $headerDefaultAvatar;
+    }
+
+    ?>
+
+    <a
+        href="?mode=users"
+        class="header-avatar-link"
+        title="Trang cá nhân"
+    >
+
+        <img
+            src="<?= htmlspecialchars($headerAvatar) ?>"
+            alt="Avatar"
+            class="header-avatar"
+        >
+
+    </a>
+
+<?php else: ?>
+
+    <a
+        class="login-button"
+        href="?mode=client&action=login"
+    >
+        Login
+    </a>
+
+<?php endif; ?>
         </div>
     </div>
 </header>
@@ -166,12 +304,11 @@
                 <h6>Collections</h6>
                 <ul>
                     <li><a href="?mode=client&action=collection&name=Invisible Fence">Invisible Fence</a></li>
-                    <li><a href="?mode=client&action=collection&name=Wishless Party">Wishless Party</a></li>
+                    <li><a href="?mode=client&action=collection&name=Keep the Wonder">Keep the Wonder</a></li>
                     <li><a href="?mode=client&action=collection&name=Chaos Hotel">Chaos Hotel</a></li>
-                    <li><a href="?mode=client&action=collection&name=Keep The Wonder">Keep The Wonder</a></li>
-                    <li><a href="?mode=client&action=collection&name=Keep Love">Keep Love Tee</a></li>
-                    <li><a href="?mode=client&action=collection&name=Keep Love">RE(FLEX)</a></li>
-                   
+                    <li><a href="?mode=client&action=collection&name=RE(FLEX)">RE(FLEX)</a></li>
+                    <li><a href="?mode=client&action=collection&name=Wishless Party">Wishless Party</a></li>
+                    <li><a href="?mode=client&action=collection&name=Keep Love Tee">Keep Love Tee</a></li>
                 </ul>
             </div>
             <div class="footer-col">
