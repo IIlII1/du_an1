@@ -15,9 +15,11 @@ $success = $success ?? false;
         <div class="alert alert-success">
             <h5>Đặt hàng thành công!</h5>
             <p>Chúng tôi đã nhận đơn hàng của bạn. Vui lòng giữ lại thông tin bên dưới.</p>
+            <p><strong>Mã đơn hàng:</strong> #<?= htmlspecialchars($_SESSION['order_success']['order_id']) ?></p>
             <p><strong>Người nhận:</strong> <?= htmlspecialchars($_SESSION['order_success']['customer_name']) ?></p>
             <p><strong>SĐT:</strong> <?= htmlspecialchars($_SESSION['order_success']['phone']) ?></p>
             <p><strong>Địa chỉ:</strong> <?= htmlspecialchars($_SESSION['order_success']['address']) ?></p>
+            <p><strong>Ghi chú:</strong> <?= !empty($_SESSION['order_success']['note']) ? htmlspecialchars($_SESSION['order_success']['note']) : 'Không có' ?></p>
             <p><strong>Tổng tiền:</strong> <?= number_format($_SESSION['order_success']['total'], 0, ',', '.') ?>₫</p>
         </div>
         <?php unset($_SESSION['order_success']); ?>

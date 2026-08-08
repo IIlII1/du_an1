@@ -18,6 +18,21 @@ class BaseModel
         }
     }
 
+    protected function beginTransaction(): bool
+    {
+        return $this->pdo->beginTransaction();
+    }
+
+    protected function commit(): bool
+    {
+        return $this->pdo->commit();
+    }
+
+    protected function rollBack(): bool
+    {
+        return $this->pdo->rollBack();
+    }
+
     // Hủy kết nối CSDL
     public function __destruct()
     {

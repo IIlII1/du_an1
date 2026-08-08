@@ -235,6 +235,12 @@
               <p>Quản Lý Tài Khoản</p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="?mode=admin&action=orders" class="nav-link">
+              <i class="nav-icon fas fa-shopping-bag"></i>
+              <p>Quản Lý Đơn Hàng</p>
+            </a>
+          </li>
           <li class="nav-header">CART</li>
           <li class="nav-item">
             <a href="?mode=client&action=cart" class="nav-link">

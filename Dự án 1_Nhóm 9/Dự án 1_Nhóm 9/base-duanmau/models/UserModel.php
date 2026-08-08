@@ -145,6 +145,47 @@ class UserModel extends BaseModel
         return (int) ($row['max_id'] ?? 0) + 1;
     }
 
+    public function createOrderWithDetails(int $userId, float $total, array $items): int
+    {
+        $this->beginTransaction();
+
+        try {
+            $orderId = $this->getNextOrderId();
+            $sql = "INSERT INTO orders (order_id, user_id, order_date, total_money, status) VALUES (:order_id, :user_id, :order_date, :total_money, :status)";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindValue(':order_id', $orderId, PDO::PARAM_INT);
+            $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
+            $stmt->bindValue(':order_date', date('Y-m-d'));
+            $stmt->bindValue(':total_money', $total);
+            $stmt->bindValue(':status', 'Chờ xác nhận');
+            $stmt->execute();
+
+            foreach ($items as $item) {
+                $sqlDetail = "INSERT INTO order_details (order_id, product_id, quantity, price, size_id) VALUES (:order_id, :product_id, :quantity, :price, :size_id)";
+                $stmtDetail = $this->pdo->prepare($sqlDetail);
+                $stmtDetail->bindValue(':order_id', $orderId, PDO::PARAM_INT);
+                $stmtDetail->bindValue(':product_id', (int) ($item['product_id'] ?? 0), PDO::PARAM_INT);
+                $stmtDetail->bindValue(':quantity', (int) ($item['quantity'] ?? 1), PDO::PARAM_INT);
+                $stmtDetail->bindValue(':price', (float) ($item['price'] ?? 0));
+                $stmtDetail->bindValue(':size_id', (int) ($item['size_id'] ?? 0), PDO::PARAM_INT);
+                $stmtDetail->execute();
+            }
+
+            $this->commit();
+            return $orderId;
+        } catch (Throwable $e) {
+            $this->rollBack();
+            throw $e;
+        }
+    }
+
+    private function getNextOrderId(): int
+    {
+        $stmt = $this->pdo->query("SELECT MAX(order_id) AS max_id FROM orders");
+        $row = $stmt->fetch();
+        return (int) ($row['max_id'] ?? 0) + 1;
+    }
+
     public function getOrdersByUser(int $userId): array
     {
         $sql = "SELECT * FROM orders WHERE user_id = :user_id ORDER BY order_id DESC";
@@ -162,6 +203,32 @@ class UserModel extends BaseModel
         $stmt->bindValue(':user_id', $userId);
         $stmt->execute();
         return $stmt->fetch();
+    }
+
+    public function getAllOrders(): array
+    {
+        $sql = "SELECT o.*, u.name AS user_name, u.email AS user_email FROM orders o JOIN users u ON o.user_id = u.user_id ORDER BY o.order_id DESC";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    public function getOrderByIdAdmin(int $orderId)
+    {
+        $sql = "SELECT o.*, u.name AS user_name, u.email AS user_email FROM orders o JOIN users u ON o.user_id = u.user_id WHERE o.order_id = :order_id LIMIT 1";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':order_id', $orderId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch();
+    }
+
+    public function updateOrderStatus(int $orderId, string $status): bool
+    {
+        $sql = "UPDATE orders SET status = :status WHERE order_id = :order_id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':status', $status);
+        $stmt->bindValue(':order_id', $orderId, PDO::PARAM_INT);
+        return $stmt->execute();
     }
 
     public function getOrderDetails(int $orderId): array

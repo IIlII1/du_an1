@@ -3,10 +3,12 @@
 class CartController
 {
     private $productModel;
+    private $userModel;
 
     public function __construct()
     {
         $this->productModel = new ProModel();
+        $this->userModel = new UserModel();
     }
 
     private function getCart()
@@ -43,6 +45,7 @@ class CartController
                 'product_name' => $product['product_name'],
                 'price' => (float) $product['price'],
                 'img' => $product['img'],
+                'size_id' => (int) ($product['size_id'] ?? 0),
                 'quantity' => $quantity,
                 'line_total' => $lineTotal,
             ];
@@ -163,6 +166,12 @@ class CartController
             exit;
         }
 
+        if (empty($_SESSION['user'])) {
+            $_SESSION['error'] = 'Vui lòng đăng nhập trước khi đặt hàng.';
+            header('Location: ' . BASE_URL . '?mode=client&action=login');
+            exit;
+        }
+
         $customerName = trim($_POST['customer_name'] ?? '');
         $phone = trim($_POST['phone'] ?? '');
         $address = trim($_POST['address'] ?? '');
@@ -175,7 +184,18 @@ class CartController
         }
 
         $cartData = $this->buildCartItems($cart);
+        $userId = (int) $_SESSION['user']['user_id'];
+
+        try {
+            $orderId = $this->userModel->createOrderWithDetails($userId, $cartData['total'], $cartData['items']);
+        } catch (Throwable $e) {
+            $_SESSION['error'] = 'Không thể tạo đơn hàng. Vui lòng thử lại sau.';
+            header('Location: ' . BASE_URL . '?mode=client&action=checkout');
+            exit;
+        }
+
         $_SESSION['order_success'] = [
+            'order_id' => $orderId,
             'customer_name' => $customerName,
             'phone' => $phone,
             'address' => $address,
