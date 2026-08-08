@@ -27,11 +27,22 @@ $success = $success ?? false;
 
     <?php if (!$success): ?>
         <div class="row">
-            <div class="col-lg-7">
+            <div class="col-lg-7 mb-4">
                 <div class="card shadow-sm">
                     <div class="card-body">
                         <h5 class="card-title">Thông tin người nhận</h5>
                         <form action="?mode=client&action=placeOrder" method="post">
+                            <?php if (!empty($addresses)): ?>
+                                <div class="form-group">
+                                    <label>Chọn địa chỉ đã lưu</label>
+                                    <select name="address_id" class="form-control">
+                                        <option value="0">-- Sử dụng địa chỉ mới --</option>
+                                        <?php foreach ($addresses as $savedAddress): ?>
+                                            <option value="<?= $savedAddress['address_id'] ?>"><?= htmlspecialchars($savedAddress['receiver_name']) ?> - <?= htmlspecialchars($savedAddress['address']) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                            <?php endif; ?>
                             <div class="form-group">
                                 <label>Họ tên</label>
                                 <input type="text" name="customer_name" class="form-control" required>
@@ -47,6 +58,28 @@ $success = $success ?? false;
                             <div class="form-group">
                                 <label>Ghi chú</label>
                                 <textarea name="note" class="form-control" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Phương thức thanh toán</label>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="payment_cod" name="payment_method" value="Thanh toán khi nhận hàng" class="custom-control-input" checked>
+                                    <label class="custom-control-label" for="payment_cod">Thanh toán khi nhận hàng</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="payment_bank" name="payment_method" value="Chuyển khoản ngân hàng" class="custom-control-input">
+                                    <label class="custom-control-label" for="payment_bank">Chuyển khoản ngân hàng</label>
+                                </div>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" id="payment_qr" name="payment_method" value="Chuyển khoản QR" class="custom-control-input">
+                                    <label class="custom-control-label" for="payment_qr">Chuyển khoản QR</label>
+                                </div>
+                            </div>
+                            <div class="card bg-light p-3 mb-3">
+                                <strong>Thông tin thanh toán</strong>
+                                <p class="mb-1"><strong>Ngân hàng:</strong> Vietcombank</p>
+                                <p class="mb-1"><strong>Chủ tài khoản:</strong> Nguyễn Văn A</p>
+                                <p class="mb-1"><strong>Số tài khoản:</strong> 0123456789</p>
+                                <p class="mb-0"><strong>QR:</strong> Quét mã QR để thanh toán nhanh.</p>
                             </div>
                             <button type="submit" class="btn btn-primary">Đặt hàng</button>
                         </form>

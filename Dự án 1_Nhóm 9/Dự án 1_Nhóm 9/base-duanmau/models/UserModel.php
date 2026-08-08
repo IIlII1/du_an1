@@ -60,6 +60,16 @@ class UserModel extends BaseModel
         return $stmt->fetchAll();
     }
 
+    public function getAddressById(int $addressId, int $userId)
+    {
+        $sql = "SELECT * FROM addresses WHERE address_id = :address_id AND user_id = :user_id LIMIT 1";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':address_id', $addressId, PDO::PARAM_INT);
+        $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch();
+    }
+
     public function addAddress(int $userId, string $receiverName, string $phone, string $address): bool
     {
         $addressId = $this->getNextAddressId();
@@ -145,7 +155,7 @@ class UserModel extends BaseModel
         return (int) ($row['max_id'] ?? 0) + 1;
     }
 
-    public function createOrderWithDetails(int $userId, float $total, array $items): int
+    public function createOrderWithDetails(int $userId, float $total, array $items, string $paymentMethod, string $paymentStatus): int
     {
         $this->beginTransaction();
 
@@ -159,6 +169,14 @@ class UserModel extends BaseModel
             $stmt->bindValue(':total_money', $total);
             $stmt->bindValue(':status', 'Chờ xác nhận');
             $stmt->execute();
+
+            $sqlPayment = "INSERT INTO payment (order_id, payment_method, payment_status, payment_date) VALUES (:order_id, :payment_method, :payment_status, :payment_date)";
+            $stmtPayment = $this->pdo->prepare($sqlPayment);
+            $stmtPayment->bindValue(':order_id', $orderId, PDO::PARAM_INT);
+            $stmtPayment->bindValue(':payment_method', $paymentMethod);
+            $stmtPayment->bindValue(':payment_status', $paymentStatus);
+            $stmtPayment->bindValue(':payment_date', date('Y-m-d H:i:s'));
+            $stmtPayment->execute();
 
             foreach ($items as $item) {
                 $sqlDetail = "INSERT INTO order_details (order_id, product_id, quantity, price, size_id) VALUES (:order_id, :product_id, :quantity, :price, :size_id)";
@@ -188,26 +206,26 @@ class UserModel extends BaseModel
 
     public function getOrdersByUser(int $userId): array
     {
-        $sql = "SELECT * FROM orders WHERE user_id = :user_id ORDER BY order_id DESC";
+        $sql = "SELECT o.*, p.payment_method, p.payment_status FROM orders o LEFT JOIN payment p ON o.order_id = p.order_id WHERE o.user_id = :user_id ORDER BY o.order_id DESC";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->bindValue(':user_id', $userId);
+        $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll();
     }
 
     public function getOrderById(int $orderId, int $userId)
     {
-        $sql = "SELECT * FROM orders WHERE order_id = :order_id AND user_id = :user_id LIMIT 1";
+        $sql = "SELECT o.*, p.payment_method, p.payment_status FROM orders o LEFT JOIN payment p ON o.order_id = p.order_id WHERE o.order_id = :order_id AND o.user_id = :user_id LIMIT 1";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->bindValue(':order_id', $orderId);
-        $stmt->bindValue(':user_id', $userId);
+        $stmt->bindValue(':order_id', $orderId, PDO::PARAM_INT);
+        $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch();
     }
 
     public function getAllOrders(): array
     {
-        $sql = "SELECT o.*, u.name AS user_name, u.email AS user_email FROM orders o JOIN users u ON o.user_id = u.user_id ORDER BY o.order_id DESC";
+        $sql = "SELECT o.*, u.name AS user_name, u.email AS user_email, p.payment_method, p.payment_status FROM orders o JOIN users u ON o.user_id = u.user_id LEFT JOIN payment p ON o.order_id = p.order_id ORDER BY o.order_id DESC";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll();
@@ -215,7 +233,7 @@ class UserModel extends BaseModel
 
     public function getOrderByIdAdmin(int $orderId)
     {
-        $sql = "SELECT o.*, u.name AS user_name, u.email AS user_email FROM orders o JOIN users u ON o.user_id = u.user_id WHERE o.order_id = :order_id LIMIT 1";
+        $sql = "SELECT o.*, u.name AS user_name, u.email AS user_email, p.payment_method, p.payment_status FROM orders o JOIN users u ON o.user_id = u.user_id LEFT JOIN payment p ON o.order_id = p.order_id WHERE o.order_id = :order_id LIMIT 1";
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':order_id', $orderId, PDO::PARAM_INT);
         $stmt->execute();

@@ -34,7 +34,10 @@ $statusClassMap = [
                                 <td>#<?= htmlspecialchars($order['order_id']) ?></td>
                                 <td><?= htmlspecialchars($order['order_date']) ?></td>
                                 <td><?= number_format($order['total_money'], 0, ',', '.') ?>₫</td>
-                                <td><span class="badge badge-pill <?= $badgeClass ?>"><?= htmlspecialchars($order['status']) ?></span></td>
+                                <td>
+                                    <span class="badge badge-pill <?= $badgeClass ?>"><?= htmlspecialchars($order['status']) ?></span>
+                                    <span class="badge badge-pill badge-light text-dark ml-2"><?= htmlspecialchars($order['payment_status'] ?? 'Chưa thanh toán') ?></span>
+                                </td>
                                 <td>
                                     <a href="?mode=users&action=orderDetail&id=<?= $order['order_id'] ?>" class="btn btn-sm btn-info">Xem</a>
                                 </td>

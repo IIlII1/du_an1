@@ -146,6 +146,10 @@ class CartController
         $cartData = $this->buildCartItems($cart);
         $cartItems = $cartData['items'];
         $total = $cartData['total'];
+        $addresses = [];
+        if (!empty($_SESSION['user'])) {
+            $addresses = $this->userModel->getAddressesByUser((int) $_SESSION['user']['user_id']);
+        }
         $view = 'checkout';
         $success = isset($_GET['success']) && $_GET['success'] == '1';
 
@@ -172,10 +176,24 @@ class CartController
             exit;
         }
 
+        $addressId = (int) ($_POST['address_id'] ?? 0);
         $customerName = trim($_POST['customer_name'] ?? '');
         $phone = trim($_POST['phone'] ?? '');
         $address = trim($_POST['address'] ?? '');
         $note = trim($_POST['note'] ?? '');
+        $paymentMethod = trim($_POST['payment_method'] ?? 'Thanh toán khi nhận hàng');
+
+        if ($addressId > 0) {
+            $savedAddress = $this->userModel->getAddressById($addressId, (int) $_SESSION['user']['user_id']);
+            if (!$savedAddress) {
+                $_SESSION['error'] = 'Địa chỉ không hợp lệ.';
+                header('Location: ' . BASE_URL . '?mode=client&action=checkout');
+                exit;
+            }
+            $customerName = $savedAddress['receiver_name'];
+            $phone = $savedAddress['phone'];
+            $address = $savedAddress['address'];
+        }
 
         if ($customerName === '' || $phone === '' || $address === '') {
             $_SESSION['error'] = 'Vui lòng điền đầy đủ thông tin người nhận.';
@@ -185,9 +203,12 @@ class CartController
 
         $cartData = $this->buildCartItems($cart);
         $userId = (int) $_SESSION['user']['user_id'];
+        $paymentStatus = in_array($paymentMethod, ['Chuyển khoản ngân hàng', 'Chuyển khoản QR'], true)
+            ? 'Đã thanh toán'
+            : 'Chưa thanh toán';
 
         try {
-            $orderId = $this->userModel->createOrderWithDetails($userId, $cartData['total'], $cartData['items']);
+            $orderId = $this->userModel->createOrderWithDetails($userId, $cartData['total'], $cartData['items'], $paymentMethod, $paymentStatus);
         } catch (Throwable $e) {
             $_SESSION['error'] = 'Không thể tạo đơn hàng. Vui lòng thử lại sau.';
             header('Location: ' . BASE_URL . '?mode=client&action=checkout');

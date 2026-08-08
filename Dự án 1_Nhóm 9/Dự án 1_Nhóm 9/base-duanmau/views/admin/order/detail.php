@@ -1,3 +1,29 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết đơn hàng</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <style>
+        .admin-order-detail .info-card {
+            min-height: 135px;
+        }
+        .admin-order-detail .order-summary {
+            gap: 1rem;
+        }
+        .admin-order-detail .order-actions .btn {
+            margin-right: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+        .admin-order-detail .payment-info {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+        }
+    </style>
+</head>
+<body class="bg-light">
+<div class="container py-4">
 <?php
 $statusClassMap = [
     'Chờ xác nhận' => 'badge-warning',
@@ -35,6 +61,20 @@ $badgeClass = $statusClassMap[$order['status']] ?? 'badge-secondary';
                     </div>
                 </div>
             </div>
+            <div class="row mb-4">
+                <div class="col-md-6 mb-3">
+                    <div class="p-3 bg-white rounded border">
+                        <h6 class="text-muted">Phương thức thanh toán</h6>
+                        <p class="mb-0"><?= htmlspecialchars($order['payment_method'] ?? 'Chưa chọn') ?></p>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="p-3 bg-white rounded border">
+                        <h6 class="text-muted">Trạng thái thanh toán</h6>
+                        <p class="mb-0"><?= htmlspecialchars($order['payment_status'] ?? 'Chưa thanh toán') ?></p>
+                    </div>
+                </div>
+            </div>
             <h5 class="mb-3">Chi tiết sản phẩm</h5>
             <div class="table-responsive">
                 <table class="table table-bordered table-hover align-middle mb-0">
@@ -58,7 +98,7 @@ $badgeClass = $statusClassMap[$order['status']] ?? 'badge-secondary';
                     </tbody>
                 </table>
             </div>
-            <div class="mt-4">
+            <div class="mt-4 order-actions">
                 <a href="?mode=admin&action=orders" class="btn btn-secondary">Quay lại</a>
                 <a class="btn btn-success" href="?mode=admin&action=approveOrder&id=<?= $order['order_id'] ?>">Xác nhận</a>
                 <a class="btn btn-danger" href="?mode=admin&action=cancelOrder&id=<?= $order['order_id'] ?>" onclick="return confirm('Xác nhận hủy đơn hàng này?');">Hủy</a>
@@ -66,3 +106,6 @@ $badgeClass = $statusClassMap[$order['status']] ?? 'badge-secondary';
         </div>
     </div>
 </div>
+</div>
+</body>
+</html>

@@ -34,6 +34,20 @@ $badgeClass = $statusClassMap[$order['status']] ?? 'badge-secondary';
                 </div>
             </div>
         </div>
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+                <div class="p-3 bg-white rounded border">
+                    <h6 class="text-muted">Phương thức thanh toán</h6>
+                    <p class="mb-0"><?= htmlspecialchars($order['payment_method'] ?? 'Chưa chọn') ?></p>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="p-3 bg-white rounded border">
+                    <h6 class="text-muted">Trạng thái thanh toán</h6>
+                    <p class="mb-0"><?= htmlspecialchars($order['payment_status'] ?? 'Chưa thanh toán') ?></p>
+                </div>
+            </div>
+        </div>
         <h5 class="mb-3">Chi tiết sản phẩm</h5>
         <?php if (empty($details)): ?>
             <div class="alert alert-info">Không có chi tiết đơn hàng.</div>
