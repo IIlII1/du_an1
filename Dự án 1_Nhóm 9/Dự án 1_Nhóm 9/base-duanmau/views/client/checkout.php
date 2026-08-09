@@ -12,18 +12,69 @@ $success = $success ?? false;
     <?php endif; ?>
 
     <?php if ($success && !empty($_SESSION['order_success'])): ?>
-        <div class="alert alert-success">
-            <h5>Đặt hàng thành công!</h5>
-            <p>Chúng tôi đã nhận đơn hàng của bạn. Vui lòng giữ lại thông tin bên dưới.</p>
-            <p><strong>Mã đơn hàng:</strong> #<?= htmlspecialchars($_SESSION['order_success']['order_id']) ?></p>
-            <p><strong>Người nhận:</strong> <?= htmlspecialchars($_SESSION['order_success']['customer_name']) ?></p>
-            <p><strong>SĐT:</strong> <?= htmlspecialchars($_SESSION['order_success']['phone']) ?></p>
-            <p><strong>Địa chỉ:</strong> <?= htmlspecialchars($_SESSION['order_success']['address']) ?></p>
-            <p><strong>Ghi chú:</strong> <?= !empty($_SESSION['order_success']['note']) ? htmlspecialchars($_SESSION['order_success']['note']) : 'Không có' ?></p>
-            <p><strong>Tổng tiền:</strong> <?= number_format($_SESSION['order_success']['total'], 0, ',', '.') ?>₫</p>
-        </div>
-        <?php unset($_SESSION['order_success']); ?>
+                <div class="alert alert-success d-none" id="order-success-inline">
+                        <h5>Đặt hàng thành công!</h5>
+                        <p>Chúng tôi đã nhận đơn hàng của bạn. Vui lòng giữ lại thông tin bên dưới.</p>
+                        <p><strong>Mã đơn hàng:</strong> #<?= htmlspecialchars($_SESSION['order_success']['order_id']) ?></p>
+                        <p><strong>Người nhận:</strong> <?= htmlspecialchars($_SESSION['order_success']['customer_name']) ?></p>
+                        <p><strong>SĐT:</strong> <?= htmlspecialchars($_SESSION['order_success']['phone']) ?></p>
+                        <p><strong>Địa chỉ:</strong> <?= htmlspecialchars($_SESSION['order_success']['address']) ?></p>
+                        <p><strong>Ghi chú:</strong> <?= !empty($_SESSION['order_success']['note']) ? htmlspecialchars($_SESSION['order_success']['note']) : 'Không có' ?></p>
+                        <p><strong>Tổng tiền:</strong> <?= number_format($_SESSION['order_success']['total'], 0, ',', '.') ?>₫</p>
+                </div>
+
+                <!-- Modal fallback / visual confirmation -->
+                <div class="modal fade" id="orderSuccessModal" tabindex="-1" role="dialog" aria-labelledby="orderSuccessModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header bg-success text-white">
+                                <h5 class="modal-title" id="orderSuccessModalLabel">Đặt hàng thành công</h5>
+                                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Chúng tôi đã nhận đơn hàng của bạn. Thông tin đơn hàng:</p>
+                                <ul>
+                                    <li><strong>Mã đơn:</strong> #<?= htmlspecialchars($_SESSION['order_success']['order_id']) ?></li>
+                                    <li><strong>Người nhận:</strong> <?= htmlspecialchars($_SESSION['order_success']['customer_name']) ?></li>
+                                    <li><strong>SĐT:</strong> <?= htmlspecialchars($_SESSION['order_success']['phone']) ?></li>
+                                    <li><strong>Địa chỉ:</strong> <?= htmlspecialchars($_SESSION['order_success']['address']) ?></li>
+                                    <li><strong>Tổng:</strong> <?= number_format($_SESSION['order_success']['total'], 0, ',', '.') ?>₫</li>
+                                </ul>
+                            </div>
+                            <div class="modal-footer">
+                                <a href="?mode=client&action=cart" class="btn btn-outline-secondary">Quay lại giỏ hàng</a>
+                                <a href="?mode=client" class="btn btn-primary">Tiếp tục mua sắm</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <?php unset($_SESSION['order_success']); ?>
     <?php endif; ?>
+
+<?php if ($success): ?>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            try {
+                // show modal (requires bootstrap js loaded by main.php)
+                setTimeout(function () {
+                    var $ = window.jQuery || null;
+                    if ($ && typeof $.fn.modal === 'function') {
+                        $('#orderSuccessModal').modal('show');
+                    } else {
+                        var el = document.getElementById('order-success-inline');
+                        if (el) el.classList.remove('d-none');
+                    }
+                }, 150);
+            } catch (e) {
+                var el = document.getElementById('order-success-inline');
+                if (el) el.classList.remove('d-none');
+            }
+        });
+    </script>
+<?php endif; ?>
 
     <?php if (!$success): ?>
         <div class="row">

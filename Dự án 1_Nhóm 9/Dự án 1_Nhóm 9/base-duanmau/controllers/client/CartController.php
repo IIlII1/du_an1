@@ -48,6 +48,7 @@ class CartController
                 'size_id' => (int) ($product['size_id'] ?? 0),
                 'quantity' => $quantity,
                 'line_total' => $lineTotal,
+                'added_at' => $item['added_at'] ?? null,
             ];
         }
 
@@ -77,6 +78,12 @@ class CartController
         $product = $this->productModel->getById($productId);
 
         if (!$product) {
+            if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'message' => 'Sản phẩm không tồn tại.']);
+                exit;
+            }
+
             $_SESSION['error'] = 'Sản phẩm không tồn tại.';
             header('Location: ' . BASE_URL . '?mode=client');
             exit;
@@ -85,13 +92,34 @@ class CartController
         $cart = $this->getCart();
         if (isset($cart[$productId])) {
             $cart[$productId]['quantity'] += $quantity;
+            if (empty($cart[$productId]['added_at'])) {
+                $cart[$productId]['added_at'] = date('Y-m-d H:i:s');
+            }
         } else {
-            $cart[$productId] = ['quantity' => $quantity];
+            $cart[$productId] = [
+                'quantity' => $quantity,
+                'added_at' => date('Y-m-d H:i:s'),
+            ];
         }
 
         $this->saveCart($cart);
-        $_SESSION['success'] = 'Đã thêm sản phẩm vào giỏ hàng.';
-        header('Location: ' . BASE_URL . '?mode=client&action=cart');
+
+        $cartQuantity = array_sum(array_column($cart, 'quantity'));
+        $successMessage = 'Đã thêm sản phẩm vào giỏ hàng.';
+
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => true,
+                'message' => $successMessage,
+                'cartQuantity' => $cartQuantity,
+            ]);
+            exit;
+        }
+
+        $_SESSION['success'] = $successMessage;
+        $redirect = $_SERVER['HTTP_REFERER'] ?? BASE_URL . '?mode=client';
+        header('Location: ' . $redirect);
         exit;
     }
 
@@ -193,6 +221,14 @@ class CartController
             $customerName = $savedAddress['receiver_name'];
             $phone = $savedAddress['phone'];
             $address = $savedAddress['address'];
+        } else {
+            $userId = (int) $_SESSION['user']['user_id'];
+            if ($customerName !== '' && $phone !== '' && $address !== '') {
+                $existingAddress = $this->userModel->findAddress($userId, $customerName, $phone, $address);
+                if (!$existingAddress) {
+                    $this->userModel->addAddress($userId, $customerName, $phone, $address);
+                }
+            }
         }
 
         if ($customerName === '' || $phone === '' || $address === '') {

@@ -27,6 +27,7 @@ $total = $total ?? 0;
                             <th>Sản phẩm</th>
                             <th>Giá</th>
                             <th>Số lượng</th>
+                            <th>Ngày thêm</th>
                             <th>Tạm tính</th>
                             <th></th>
                         </tr>
@@ -44,6 +45,13 @@ $total = $total ?? 0;
                                 <td><?= number_format($item['price'], 0, ',', '.') ?>₫</td>
                                 <td>
                                     <input type="number" name="quantity[<?= $item['product_id'] ?>]" value="<?= $item['quantity'] ?>" min="1" class="form-control" style="width: 90px">
+                                </td>
+                                <td>
+                                    <?php if (!empty($item['added_at'])): ?>
+                                        <?= date('d/m/Y H:i', strtotime($item['added_at'])) ?>
+                                    <?php else: ?>
+                                        -
+                                    <?php endif; ?>
                                 </td>
                                 <td><?= number_format($item['line_total'], 0, ',', '.') ?>₫</td>
                                 <td>

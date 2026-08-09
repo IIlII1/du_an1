@@ -70,6 +70,18 @@ class UserModel extends BaseModel
         return $stmt->fetch();
     }
 
+    public function findAddress(int $userId, string $receiverName, string $phone, string $address)
+    {
+        $sql = "SELECT * FROM addresses WHERE user_id = :user_id AND receiver_name = :receiver_name AND phone = :phone AND address = :address LIMIT 1";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
+        $stmt->bindValue(':receiver_name', $receiverName, PDO::PARAM_STR);
+        $stmt->bindValue(':phone', $phone, PDO::PARAM_STR);
+        $stmt->bindValue(':address', $address, PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetch();
+    }
+
     public function addAddress(int $userId, string $receiverName, string $phone, string $address): bool
     {
         $addressId = $this->getNextAddressId();

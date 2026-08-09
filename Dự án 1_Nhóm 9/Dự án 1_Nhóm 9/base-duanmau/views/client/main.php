@@ -33,6 +33,12 @@
         .site-header .login-button { color: #111; background: #fff; border: 1px solid rgba(0,0,0,0.14); box-shadow: 0 14px 30px rgba(0,0,0,0.08); padding: .72rem 1.25rem; border-radius: 999px; font-weight: 700; text-decoration: none; }
         .site-header .login-button:hover { background: #111; color: #fff; }
         .site-header .header-actions { display: flex; align-items: center; gap: .75rem; }
+        .site-header .header-cart { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.95); border: 1px solid rgba(0,0,0,0.12); color: #111; text-decoration: none; }
+        .site-header .header-cart:hover { background: rgba(17,17,17,0.95); color: #fff; }
+        .site-header .cart-count-badge { position: absolute; top: 4px; right: 4px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: #d12c2c; color: #fff; font-size: .7rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+        .cart-toast { position: fixed; right: 1.5rem; bottom: 1.5rem; background: rgba(17,17,17,0.95); color: #fff; padding: 1rem 1.2rem; border-radius: 18px; box-shadow: 0 20px 50px rgba(0,0,0,0.25); opacity: 0; transform: translateY(20px); transition: opacity .25s ease, transform .25s ease; z-index: 2500; pointer-events: none; }
+        .cart-toast.show { opacity: 1; transform: translateY(0); }
+        .fly-image { position: fixed; z-index: 2500; pointer-events: none; width: 90px; height: 90px; object-fit: cover; border-radius: 16px; transition: transform .45s ease, opacity .45s ease; }
         .hero-banner { min-height: 100vh; display: flex; align-items: center; position: relative; overflow: hidden; }
         .hero-banner::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(17,17,17,.2) 0%, rgba(17,17,17,.72) 100%); }
         .hero-content { position: relative; z-index: 2; max-width: 720px; padding-top: 120px; }
@@ -200,9 +206,13 @@
             <a class="header-link" href="?mode=client">All Items</a>
             <a class="header-link" href="?mode=client">Collections</a>
             <a class="header-link" href="?mode=client&action=checkout">About Us</a>
-            <a class="header-link" href="?mode=client&action=checkout">Contact</a>
+            <a class="header-link" href="?mode=client&action=cart">Cart</a>
         </div>
         <div class="header-actions">
+            <a href="?mode=client&action=cart" class="header-cart" title="Xem giỏ hàng">
+                <i class="bi bi-cart3"></i>
+                <span class="cart-count-badge" id="cart-count"><?= !empty($_SESSION['cart']) ? array_sum(array_column($_SESSION['cart'], 'quantity')) : 0 ?></span>
+            </a>
             <form class="search-form" action="?mode=client" method="get">
                 <input type="hidden" name="mode" value="client">
                 <input class="search-input" type="search" name="q" placeholder="Tìm sản phẩm" value="<?= htmlspecialchars($_GET['q'] ?? '') ?>">
@@ -339,5 +349,72 @@
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const cartForms = document.querySelectorAll('.add-cart-form');
+        const cartCount = document.getElementById('cart-count');
+        const toast = document.createElement('div');
+        toast.className = 'cart-toast';
+        toast.id = 'cart-toast';
+        document.body.appendChild(toast);
+
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.add('show');
+            clearTimeout(window.cartToastTimeout);
+            window.cartToastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2200);
+        }
+
+        cartForms.forEach(form => {
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                const submitButton = this.querySelector('button[type=submit]');
+                const productImage = this.closest('.product-thumb').querySelector('img');
+                const cartButtonRect = submitButton.getBoundingClientRect();
+                const flyImage = productImage.cloneNode(true);
+                flyImage.className = 'fly-image';
+                flyImage.style.left = cartButtonRect.left + 'px';
+                flyImage.style.top = cartButtonRect.top + 'px';
+                document.body.appendChild(flyImage);
+
+                fetch(this.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams(new FormData(this)).toString()
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const cartIcon = document.querySelector('.header-cart');
+                        const badge = document.getElementById('cart-count');
+                        if (badge && data.cartQuantity != null) {
+                            badge.textContent = data.cartQuantity;
+                        }
+                        showToast(data.message || 'Đã thêm vào giỏ hàng');
+                    } else {
+                        showToast(data.message || 'Thêm vào giỏ hàng thất bại');
+                    }
+                })
+                .catch(() => showToast('Không thể thêm sản phẩm.'))
+                .finally(() => {
+                    const cartIcon = document.querySelector('.header-cart');
+                    if (cartIcon) {
+                        const targetRect = cartIcon.getBoundingClientRect();
+                        flyImage.style.transform = `translate3d(${targetRect.left - cartButtonRect.left}px, ${targetRect.top - cartButtonRect.top}px, 0) scale(0.2)`;
+                        flyImage.style.opacity = '0.1';
+                    }
+                    setTimeout(() => {
+                        flyImage.remove();
+                    }, 500);
+                });
+            });
+        });
+    });
+</script>
 </body>
 </html>

@@ -80,6 +80,7 @@ $badgeClass = $statusClassMap[$order['status']] ?? 'badge-secondary';
                 <table class="table table-bordered table-hover align-middle mb-0">
                     <thead class="thead-light">
                         <tr>
+                            <th>Ảnh</th>
                             <th>Sản phẩm</th>
                             <th>Size</th>
                             <th>Số lượng</th>
@@ -88,7 +89,17 @@ $badgeClass = $statusClassMap[$order['status']] ?? 'badge-secondary';
                     </thead>
                     <tbody>
                         <?php foreach ($details as $item): ?>
+                            <?php
+                            $img = !empty($item['img']) ? BASE_ASSETS_UPLOADS . $item['img'] : 'dist/img/default-150x150.png';
+                            $imgPath = !empty($item['img']) ? PATH_ROOT . 'assets/uploads/' . $item['img'] : '';
+                            if (!empty($imgPath) && !file_exists($imgPath)) {
+                                $img = 'dist/img/default-150x150.png';
+                            }
+                            ?>
                             <tr>
+                                <td style="width: 100px;">
+                                    <img src="<?= $img ?>" alt="<?= htmlspecialchars($item['product_name']) ?>" class="img-fluid rounded" style="max-height: 80px; object-fit: contain;">
+                                </td>
                                 <td><?= htmlspecialchars($item['product_name']) ?></td>
                                 <td><?= htmlspecialchars($item['size_name']) ?></td>
                                 <td><?= htmlspecialchars($item['quantity']) ?></td>
