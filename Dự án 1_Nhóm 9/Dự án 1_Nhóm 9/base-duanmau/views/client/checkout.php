@@ -69,17 +69,12 @@ $success = $success ?? false;
                                     <input type="radio" id="payment_bank" name="payment_method" value="Chuyển khoản ngân hàng" class="custom-control-input">
                                     <label class="custom-control-label" for="payment_bank">Chuyển khoản ngân hàng</label>
                                 </div>
-                                <div class="custom-control custom-radio">
-                                    <input type="radio" id="payment_qr" name="payment_method" value="Chuyển khoản QR" class="custom-control-input">
-                                    <label class="custom-control-label" for="payment_qr">Chuyển khoản QR</label>
-                                </div>
                             </div>
                             <div class="card bg-light p-3 mb-3">
                                 <strong>Thông tin thanh toán</strong>
-                                <p class="mb-1"><strong>Ngân hàng:</strong> Vietcombank</p>
-                                <p class="mb-1"><strong>Chủ tài khoản:</strong> Nguyễn Văn A</p>
-                                <p class="mb-1"><strong>Số tài khoản:</strong> 0123456789</p>
-                                <p class="mb-0"><strong>QR:</strong> Quét mã QR để thanh toán nhanh.</p>
+                                <p class="mb-1"><strong>Ngân hàng:</strong> Techcombank</p>
+                                <p class="mb-1"><strong>Chủ tài khoản:</strong> KEEPSILENT FASHION</p>
+                                <p class="mb-1"><strong>Số tài khoản:</strong> 6820183008</p>
                             </div>
                             <button type="submit" class="btn btn-primary">Đặt hàng</button>
                         </form>

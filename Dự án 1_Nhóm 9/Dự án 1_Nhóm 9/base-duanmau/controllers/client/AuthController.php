@@ -25,6 +25,13 @@ class AuthController
         $view = 'auth';
         $authType = $type;
 
+        $cartCount = 0;
+        if (!empty($_SESSION['cart'])) {
+            foreach ($_SESSION['cart'] as $cartItem) {
+                $cartCount += (int) ($cartItem['quantity'] ?? 0);
+            }
+        }
+
         require_once PATH_VIEW_CLIENT . 'main.php';
     }
 

@@ -14,5 +14,6 @@ match ($action) {
     'orderDetail' => (new OrderController())->detail(),
     'approveOrder' => (new OrderController())->approve(),
     'cancelOrder' => (new OrderController())->cancel(),
+    'productdetail' => (new OrderController())->cancel(),
     default => (new ProController())->index(),
 };

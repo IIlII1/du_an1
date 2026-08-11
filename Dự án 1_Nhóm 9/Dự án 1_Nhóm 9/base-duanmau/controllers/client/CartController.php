@@ -11,7 +11,7 @@ class CartController
         $this->userModel = new UserModel();
     }
 
-    private function getCart()
+private function getCart()
     {
         if (!isset($_SESSION['cart']) || !is_array($_SESSION['cart'])) {
             $_SESSION['cart'] = [];
@@ -25,13 +25,24 @@ class CartController
         $_SESSION['cart'] = $cart;
     }
 
+    private function getCartCount(): int
+    {
+        $count = 0;
+        $cart = $this->getCart();
+        foreach ($cart as $item) {
+            $count += (int) ($item['quantity'] ?? 0);
+        }
+        return $count;
+    }
+
     private function buildCartItems(array $cart): array
     {
         $items = [];
         $total = 0;
 
-        foreach ($cart as $productId => $item) {
-            $product = $this->productModel->getById((int) $productId);
+        foreach ($cart as $key => $item) {
+            $productId = (int) ($item['product_id'] ?? $key);
+            $product = $this->productModel->getById($productId);
             if (!$product) {
                 continue;
             }
@@ -40,18 +51,46 @@ class CartController
             $lineTotal = (float) $product['price'] * $quantity;
             $total += $lineTotal;
 
+            $sizeId = (int) ($item['size_id'] ?? 0);
+            if ($sizeId <= 0 && !empty($product['size_id'])) {
+                $sizeId = (int) $product['size_id'];
+            }
+            if ($sizeId <= 0) {
+                $allSizes = $this->productModel->getAllSizes();
+                if (!empty($allSizes)) {
+                    $sizeId = (int) $allSizes[0]['size_id'];
+                } else {
+                    $sizeId = 1;
+                }
+            }
+
             $items[] = [
+                'key' => $key,
                 'product_id' => (int) $product['product_id'],
                 'product_name' => $product['product_name'],
                 'price' => (float) $product['price'],
                 'img' => $product['img'],
-                'size_id' => (int) ($product['size_id'] ?? 0),
+                'size_id' => $sizeId,
+                'size_name' => $this->getSizeName($sizeId),
                 'quantity' => $quantity,
                 'line_total' => $lineTotal,
             ];
         }
 
         return ['items' => $items, 'total' => $total];
+    }
+
+    private function getSizeName(int $sizeId): string
+    {
+        if ($sizeId <= 0) {
+            return '';
+        }
+        foreach ($this->productModel->getAllSizes() as $size) {
+            if ((int) $size['size_id'] === $sizeId) {
+                return (string) $size['size_name'];
+            }
+        }
+        return '';
     }
 
     public function index()
@@ -61,6 +100,8 @@ class CartController
         $cartItems = $cartData['items'];
         $total = $cartData['total'];
         $view = 'cart';
+
+        $cartCount = $this->getCartCount();
 
         require_once PATH_VIEW_CLIENT . 'main.php';
     }
@@ -73,6 +114,7 @@ class CartController
         }
 
         $productId = (int) ($_POST['product_id'] ?? 0);
+        $sizeId = (int) ($_POST['size_id'] ?? 0);
         $quantity = max(1, (int) ($_POST['quantity'] ?? 1));
         $product = $this->productModel->getById($productId);
 
@@ -82,14 +124,41 @@ class CartController
             exit;
         }
 
+        // Nếu sản phẩm có size trong bảng product_size, bắt buộc chọn size hợp lệ
+        $productSizes = $this->productModel->getProductSizes($productId);
+        if (!empty($productSizes) && ($sizeId <= 0 || !in_array($sizeId, array_map('intval', array_column($productSizes, 'size_id'))))) {
+            $_SESSION['error'] = 'Vui lòng chọn size sản phẩm.';
+            header('Location: ' . BASE_URL . '?mode=client&action=productDetail&product_id=' . $productId);
+            exit;
+        }
+
+        // Composite key: phân biệt cùng sản phẩm nhưng khác size
+        $key = $productId . ':' . $sizeId;
+
         $cart = $this->getCart();
-        if (isset($cart[$productId])) {
-            $cart[$productId]['quantity'] += $quantity;
+        if (isset($cart[$key])) {
+            $cart[$key]['quantity'] += $quantity;
         } else {
-            $cart[$productId] = ['quantity' => $quantity];
+            $cart[$key] = [
+                'product_id' => $productId,
+                'size_id' => $sizeId,
+                'quantity' => $quantity,
+            ];
         }
 
         $this->saveCart($cart);
+
+        // AJAX request: return JSON instead of redirect
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => true,
+                'message' => 'Đã thêm sản phẩm vào giỏ hàng.',
+                'cartCount' => $this->getCartCount(),
+            ]);
+            exit;
+        }
+
         $_SESSION['success'] = 'Đã thêm sản phẩm vào giỏ hàng.';
         header('Location: ' . BASE_URL . '?mode=client&action=cart');
         exit;
@@ -105,16 +174,38 @@ class CartController
         $cart = $this->getCart();
         $quantities = $_POST['quantity'] ?? [];
 
-        foreach ($quantities as $productId => $quantity) {
-            $productId = (int) $productId;
+        foreach ($quantities as $key => $quantity) {
             $quantity = max(1, (int) $quantity);
 
-            if ($productId > 0 && isset($cart[$productId])) {
-                $cart[$productId]['quantity'] = $quantity;
+            if (isset($cart[$key])) {
+                $cart[$key]['quantity'] = $quantity;
             }
         }
 
         $this->saveCart($cart);
+
+        // AJAX request: return updated totals as JSON
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
+            $cartData = $this->buildCartItems($cart);
+            $requestedKey = (string) key($quantities);
+            $lineTotal = 0;
+            foreach ($cartData['items'] as $item) {
+                if ($item['key'] === $requestedKey) {
+                    $lineTotal = $item['line_total'];
+                    break;
+                }
+            }
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => true,
+                'message' => 'Giỏ hàng đã được cập nhật.',
+                'cartCount' => $this->getCartCount(),
+                'total' => $cartData['total'],
+                'lineTotal' => $lineTotal,
+            ]);
+            exit;
+        }
+
         $_SESSION['success'] = 'Giỏ hàng đã được cập nhật.';
         header('Location: ' . BASE_URL . '?mode=client&action=cart');
         exit;
@@ -122,11 +213,11 @@ class CartController
 
     public function remove()
     {
-        $productId = (int) ($_GET['id'] ?? 0);
+        $key = $_GET['key'] ?? $_GET['id'] ?? '';
         $cart = $this->getCart();
 
-        if ($productId > 0) {
-            unset($cart[$productId]);
+        if ($key !== '' && $key !== null && isset($cart[$key])) {
+            unset($cart[$key]);
             $this->saveCart($cart);
         }
 
@@ -150,8 +241,9 @@ class CartController
         if (!empty($_SESSION['user'])) {
             $addresses = $this->userModel->getAddressesByUser((int) $_SESSION['user']['user_id']);
         }
-        $view = 'checkout';
+$view = 'checkout';
         $success = isset($_GET['success']) && $_GET['success'] == '1';
+        $cartCount = $this->getCartCount();
 
         require_once PATH_VIEW_CLIENT . 'main.php';
     }
@@ -210,7 +302,7 @@ class CartController
         try {
             $orderId = $this->userModel->createOrderWithDetails($userId, $cartData['total'], $cartData['items'], $paymentMethod, $paymentStatus);
         } catch (Throwable $e) {
-            $_SESSION['error'] = 'Không thể tạo đơn hàng. Vui lòng thử lại sau.';
+            $_SESSION['error'] = 'Không thể tạo đơn hàng. Vui lòng thử lại sau. (' . $e->getMessage() . ')';
             header('Location: ' . BASE_URL . '?mode=client&action=checkout');
             exit;
         }

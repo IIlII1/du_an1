@@ -5,8 +5,11 @@ $action = $_GET['action'] ?? 'index';
 $controller = new HomeController();
 
 switch ($action) {
-    case 'index':
+case 'index':
         $controller->index();
+        break;
+    case 'productDetail':
+        $controller->productDetail();
         break;
     case 'cart':
         $cartController = new CartController();

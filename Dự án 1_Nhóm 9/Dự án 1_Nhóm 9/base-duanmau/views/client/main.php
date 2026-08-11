@@ -190,7 +190,28 @@
     object-fit: cover;
     display: block;
 }
-    </style>
+        .cart-icon { position: relative; }
+        .cart-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            min-width: 20px;
+            height: 20px;
+            padding: 0 5px;
+            border-radius: 999px;
+            background: #e74c3c;
+            color: #fff;
+            font-size: .72rem;
+            font-weight: 700;
+            line-height: 20px;
+            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+</style>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
 <header class="site-header">
@@ -202,7 +223,11 @@
             <a class="header-link" href="?mode=client&action=checkout">About Us</a>
             <a class="header-link" href="?mode=client&action=checkout">Contact</a>
         </div>
-        <div class="header-actions">
+<div class="header-actions">
+        <a href="?mode=client&action=cart" class="icon-link cart-icon" title="Giỏ hàng">
+            <i class="bi bi-bag"></i>
+            <span class="cart-badge <?= empty($cartCount) ? 'd-none' : '' ?>"><?= (int)($cartCount ?? 0) ?></span>
+        </a>
             <form class="search-form" action="?mode=client" method="get">
                 <input type="hidden" name="mode" value="client">
                 <input class="search-input" type="search" name="q" placeholder="Tìm sản phẩm" value="<?= htmlspecialchars($_GET['q'] ?? '') ?>">
@@ -337,7 +362,62 @@
     </div>
 </footer>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+$(document).ready(function () {
+    // Xử lý thêm vào giỏ bằng AJAX, không tải lại trang
+    $(document).on('submit', 'form.add-to-cart-form', function (e) {
+        e.preventDefault();
+        var $form = $(this);
+        var $btn = $form.find('button[type="submit"]');
+
+        $.ajax({
+            url: $form.attr('action'),
+            type: 'POST',
+            data: $form.serialize(),
+            dataType: 'json',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            beforeSend: function () {
+                $btn.prop('disabled', true);
+            },
+            success: function (response) {
+                if (response.success) {
+                    updateCartBadge(response.cartCount);
+                    showToast(response.message || 'Đã thêm vào giỏ hàng.');
+                } else {
+                    showToast(response.message || 'Có lỗi xảy ra.', 'danger');
+                }
+            },
+            error: function () {
+                showToast('Có lỗi xảy ra. Vui lòng thử lại.', 'danger');
+            },
+            complete: function () {
+                $btn.prop('disabled', false);
+            }
+        });
+    });
+
+    function updateCartBadge(count) {
+        var $badge = $('.cart-badge');
+        $badge.text(count);
+        if (count > 0) {
+            $badge.removeClass('d-none');
+        } else {
+            $badge.addClass('d-none');
+        }
+    }
+
+    function showToast(message, type) {
+        var typeClass = type === 'danger' ? 'alert-danger' : 'alert-success';
+        var $toast = $('<div class="alert ' + typeClass + ' cart-toast" style="position:fixed;top:90px;right:20px;z-index:9999;box-shadow:0 10px 30px rgba(0,0,0,0.15);">' + message + '</div>');
+        $('body').append($toast);
+        setTimeout(function () {
+            $toast.fadeOut(300, function () { $(this).remove(); });
+        }, 2500);
+    }
+});
+</script>
 </body>
 </html>
