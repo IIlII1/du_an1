@@ -142,7 +142,15 @@ class UsersController
         $view = 'comments';
         $this->render($view, compact('user', 'comments'));
     }
-
+public function reviews()
+{
+    $this->ensureLoggedIn();
+    $user = $_SESSION['user'];
+    // Đảm bảo hàm hasReviewed đã có trong UserModel
+    $hasReviewed = $this->userModel->hasReviewed($user['user_id']); 
+    $view = 'reviews';
+    $this->render($view, compact('user', 'hasReviewed'));
+}
     public function addComment()
     {
         $this->ensureLoggedIn();

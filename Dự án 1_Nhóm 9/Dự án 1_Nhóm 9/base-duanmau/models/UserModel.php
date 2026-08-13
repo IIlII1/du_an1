@@ -656,6 +656,22 @@ private function getNextWishlistId(): int
 
         return $stmt->execute();
     }
+    public function addReviewForWebsite(int $userId, int $rating, string $content): bool {
+    // Kiểm tra đã đánh giá chưa (product_id = -1 quy ước là đánh giá web)
+    $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM comments WHERE user_id = :user_id AND product_id = -1");
+    $stmt->execute(['user_id' => $userId]);
+    if ($stmt->fetchColumn() > 0) return false;
+
+    $sql = "INSERT INTO comments (comment_id, user_id, product_id, content, rating, created_at) 
+            VALUES (:comment_id, :user_id, -1, :content, :rating, NOW())";
+    $stmt = $this->pdo->prepare($sql);
+    return $stmt->execute([
+        'comment_id' => $this->getNextCommentId(),
+        'user_id' => $userId,
+        'content' => $content,
+        'rating' => $rating
+    ]);
+}
 
     public function getCommentsByUser(int $userId): array
     {

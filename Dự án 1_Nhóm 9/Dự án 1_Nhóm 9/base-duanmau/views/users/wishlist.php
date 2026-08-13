@@ -41,6 +41,7 @@
                     <thead>
 
                         <tr>
+                            <th>Ảnh</th>
                             <th>Sản phẩm</th>
                             <th>Giá</th>
                             <th>Size</th>
@@ -50,10 +51,21 @@
                     </thead>
 
                     <tbody>
+                        
 
                     <?php foreach ($wishlist as $item): ?>
 
                         <tr>
+                            <td>
+                                <img src="<?= BASE_URL . 'assets/uploads/' . $item['img'] ?>" alt="<?= htmlspecialchars($item['product_name']) ?>" style="width: 60px; height: 60px; object-fit: cover;">
+                            </td>
+
+                            <td>
+                                <?= htmlspecialchars(
+                                    $item['product_name']
+                                ) ?>
+                            </td>
+
 
                             <td>
                                 <?= htmlspecialchars(

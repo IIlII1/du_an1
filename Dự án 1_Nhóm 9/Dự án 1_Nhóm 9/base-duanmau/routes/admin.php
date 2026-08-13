@@ -15,5 +15,7 @@ match ($action) {
     'approveOrder' => (new OrderController())->approve(),
     'cancelOrder' => (new OrderController())->cancel(),
     'productdetail' => (new OrderController())->cancel(),
+     'listComments' => (new CommentController())->index(), 
+    'removeComment' => (new CommentController())->remove(), 
     default => (new ProController())->index(),
 };

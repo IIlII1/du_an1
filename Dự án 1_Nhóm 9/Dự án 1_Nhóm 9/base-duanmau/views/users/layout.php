@@ -687,7 +687,7 @@ if (!empty($user['avatar'])) {
                 href="?mode=users&action=comments"
                 class="<?= $currentAction === 'comments' ? 'active' : '' ?>"
             >
-                Bình luận
+                Đánh giá
             </a>
 
         </div>

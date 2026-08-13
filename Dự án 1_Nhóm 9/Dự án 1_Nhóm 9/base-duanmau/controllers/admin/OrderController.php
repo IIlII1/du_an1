@@ -21,6 +21,7 @@ class OrderController
         ];
         require_once PATH_VIEW_ADMIN . 'order/index.php';
     }
+   
 
     public function detail()
     {

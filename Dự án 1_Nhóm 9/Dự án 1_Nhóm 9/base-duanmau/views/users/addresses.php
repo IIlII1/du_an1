@@ -1,5 +1,5 @@
 <h1 class="page-title">
-    My addresses
+    Địa chỉ nhận hàng
 </h1>
 
 <p class="page-description">
