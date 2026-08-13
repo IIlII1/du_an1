@@ -295,9 +295,7 @@ $view = 'checkout';
 
         $cartData = $this->buildCartItems($cart);
         $userId = (int) $_SESSION['user']['user_id'];
-        $paymentStatus = in_array($paymentMethod, ['Chuyển khoản ngân hàng', 'Chuyển khoản QR'], true)
-            ? 'Đã thanh toán'
-            : 'Chưa thanh toán';
+        $paymentStatus = 'Chưa thanh toán';
 
         try {
             $orderId = $this->userModel->createOrderWithDetails($userId, $cartData['total'], $cartData['items'], $paymentMethod, $paymentStatus);
@@ -319,7 +317,52 @@ $view = 'checkout';
         ];
 
         $_SESSION['cart'] = [];
+
+        // Nếu là chuyển khoản ngân hàng, chuyển sang trang QR
+        if ($paymentMethod === 'Chuyển khoản ngân hàng') {
+            header('Location: ' . BASE_URL . '?mode=client&action=qrPayment&order_id=' . $orderId);
+            exit;
+        }
+
         header('Location: ' . BASE_URL . '?mode=client&action=checkout&success=1');
+        exit;
+    }
+
+    public function qrPayment()
+    {
+        $orderId = (int) ($_GET['order_id'] ?? 0);
+        $userId = (int) ($_SESSION['user']['user_id'] ?? 0);
+
+        if (!$orderId || !$userId) {
+            header('Location: ' . BASE_URL);
+            exit;
+        }
+
+        $order = $this->userModel->getOrderById($orderId, $userId);
+        if (!$order) {
+            header('Location: ' . BASE_URL);
+            exit;
+        }
+
+        $cartCount = $this->getCartCount();
+        $view = 'qr-payment';
+        require_once PATH_VIEW_CLIENT . 'main.php';
+    }
+
+    public function cancelOrder()
+    {
+        $orderId = (int) ($_GET['order_id'] ?? 0);
+        $userId = (int) ($_SESSION['user']['user_id'] ?? 0);
+
+        if ($orderId > 0 && $userId > 0) {
+            $order = $this->userModel->getOrderById($orderId, $userId);
+            if ($order && $order['status'] === 'Chờ xác nhận') {
+                $this->userModel->updateOrderStatus($orderId, 'Đã hủy');
+            }
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode(['success' => true]);
         exit;
     }
 }

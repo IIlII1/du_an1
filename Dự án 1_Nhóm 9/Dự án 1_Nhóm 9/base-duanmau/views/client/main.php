@@ -220,8 +220,8 @@
         <div class="nav-group">
             <a class="header-link" href="?mode=client">All Items</a>
             <a class="header-link" href="?mode=client">Collections</a>
-            <a class="header-link" href="?mode=client&action=checkout">About Us</a>
-            <a class="header-link" href="?mode=client&action=checkout">Contact</a>
+            <a class="header-link" href="?mode=client&action=about">About Us</a>
+            <a class="header-link" href="?mode=client&action=policy">Store Policies</a>
         </div>
 <div class="header-actions">
         <a href="?mode=client&action=cart" class="icon-link cart-icon" title="Giỏ hàng">
