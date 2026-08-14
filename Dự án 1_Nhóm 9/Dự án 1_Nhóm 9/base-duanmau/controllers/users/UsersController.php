@@ -187,6 +187,10 @@ public function reviews()
     $name = trim($_POST['name'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $phone = trim($_POST['phone'] ?? '');
+    $gender = trim($_POST['gender'] ?? '');
+    $dateOfBirth = trim($_POST['date_of_birth'] ?? '');
+    $city = trim($_POST['city'] ?? '');
+    $district = trim($_POST['district'] ?? '');
 
     if ($name === '' || $email === '' || $phone === '') {
 
@@ -271,7 +275,11 @@ public function reviews()
         $name,
         $email,
         $phone,
-        $avatarName
+        $avatarName,
+        $gender,
+        $dateOfBirth,
+        $city,
+        $district
     );
 
 
@@ -284,7 +292,11 @@ public function reviews()
             'email' => $newUser['email'],
             'phone' => $newUser['phone'],
             'avatar' => $newUser['avatar'] ?? null,
-            'role' => $newUser['role']
+            'role' => $newUser['role'],
+            'gender' => $newUser['gender'] ?? null,
+            'date_of_birth' => $newUser['date_of_birth'] ?? null,
+            'city' => $newUser['city'] ?? null,
+            'district' => $newUser['district'] ?? null,
         ];
 
         $_SESSION['success'] = 'Thông tin cá nhân đã được cập nhật.';

@@ -230,6 +230,41 @@ class AuthController
         exit;
     }
 
+    public function loginAdmin()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . BASE_URL . '?mode=admin');
+            exit;
+        }
+
+        $email = trim($_POST['email'] ?? '');
+        $password = trim($_POST['password'] ?? '');
+
+        if ($email === '' || $password === '') {
+            $_SESSION['admin_error'] = 'Vui lòng nhập email và mật khẩu admin.';
+            header('Location: ' . BASE_URL . '?mode=admin');
+            exit;
+        }
+
+        $user = $this->userModel->getByEmail($email);
+
+        if (
+            !$user ||
+            !password_verify($password, $user['password']) ||
+            (($user['role'] ?? 'user') !== 'admin')
+        ) {
+            $_SESSION['admin_error'] = 'Tài khoản admin không đúng hoặc không có quyền truy cập.';
+            header('Location: ' . BASE_URL . '?mode=admin');
+            exit;
+        }
+
+        $_SESSION['user'] = $user;
+        $_SESSION['success'] = 'Đăng nhập quản trị thành công.';
+
+        header('Location: ' . BASE_URL . '?mode=admin');
+        exit;
+    }
+
     public function logout()
     {
         session_unset();

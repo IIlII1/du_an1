@@ -2,6 +2,35 @@
 
 class UserModel extends BaseModel
 {
+    public function __construct()
+    {
+        parent::__construct();
+        $this->ensureProfileFields();
+    }
+
+    private function ensureProfileFields(): void
+    {
+        $stmt = $this->pdo->query('SHOW COLUMNS FROM users');
+        $columns = [];
+
+        foreach ($stmt as $column) {
+            $columns[] = $column['Field'];
+        }
+
+        $fieldDefinitions = [
+            'gender' => 'ALTER TABLE users ADD COLUMN gender VARCHAR(20) NULL AFTER phone',
+            'date_of_birth' => 'ALTER TABLE users ADD COLUMN date_of_birth DATE NULL AFTER gender',
+            'city' => 'ALTER TABLE users ADD COLUMN city VARCHAR(100) NULL AFTER date_of_birth',
+            'district' => 'ALTER TABLE users ADD COLUMN district VARCHAR(100) NULL AFTER city',
+        ];
+
+        foreach ($fieldDefinitions as $field => $sql) {
+            if (!in_array($field, $columns, true)) {
+                $this->pdo->exec($sql);
+            }
+        }
+    }
+
     public function getAll()
     {
         $sql = "SELECT * FROM users ORDER BY user_id DESC";
@@ -828,14 +857,22 @@ class UserModel extends BaseModel
         string $name,
         string $email,
         string $phone,
-        ?string $avatar = null
+        ?string $avatar = null,
+        ?string $gender = null,
+        ?string $dateOfBirth = null,
+        ?string $city = null,
+        ?string $district = null
     ): bool {
         $sql = "
             UPDATE users
             SET
                 name = :name,
                 email = :email,
-                phone = :phone";
+                phone = :phone,
+                gender = :gender,
+                date_of_birth = :date_of_birth,
+                city = :city,
+                district = :district";
 
         if ($avatar !== null) {
             $sql .= ",
@@ -851,6 +888,10 @@ class UserModel extends BaseModel
         $stmt->bindValue(':name', $name);
         $stmt->bindValue(':email', $email);
         $stmt->bindValue(':phone', $phone);
+        $stmt->bindValue(':gender', $gender === '' ? null : $gender, $gender === '' ? PDO::PARAM_NULL : PDO::PARAM_STR);
+        $stmt->bindValue(':date_of_birth', $dateOfBirth === '' ? null : $dateOfBirth, $dateOfBirth === '' ? PDO::PARAM_NULL : PDO::PARAM_STR);
+        $stmt->bindValue(':city', $city === '' ? null : $city, $city === '' ? PDO::PARAM_NULL : PDO::PARAM_STR);
+        $stmt->bindValue(':district', $district === '' ? null : $district, $district === '' ? PDO::PARAM_NULL : PDO::PARAM_STR);
         $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
 
         if ($avatar !== null) {
