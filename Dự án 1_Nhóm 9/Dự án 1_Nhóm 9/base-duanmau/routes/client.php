@@ -5,8 +5,11 @@ $action = $_GET['action'] ?? 'index';
 $controller = new HomeController();
 
 switch ($action) {
-    case 'index':
+case 'index':
         $controller->index();
+        break;
+    case 'productDetail':
+        $controller->productDetail();
         break;
     case 'cart':
         $cartController = new CartController();
@@ -28,9 +31,25 @@ switch ($action) {
         $cartController = new CartController();
         $cartController->checkout();
         break;
-    case 'placeOrder':
+        case 'placeOrder':
         $cartController = new CartController();
         $cartController->placeOrder();
+        break;
+    case 'qrPayment':
+        $cartController = new CartController();
+        $cartController->qrPayment();
+        break;
+        case 'cancelOrder':
+        $cartController = new CartController();
+        $cartController->cancelOrder();
+        break;
+    case 'about':
+        $view = 'about';
+        require_once PATH_VIEW_CLIENT . 'main.php';
+        break;
+    case 'contact':
+        $view = 'contact';
+        require_once PATH_VIEW_CLIENT . 'main.php';
         break;
     case 'login':
         $authController = new AuthController();
@@ -51,6 +70,10 @@ switch ($action) {
     case 'logout':
         $authController = new AuthController();
         $authController->logout();
+        break;
+    case 'policy':
+        $view = 'policy';
+        require_once PATH_VIEW_CLIENT . 'main.php';
         break;
     default:
         $controller->index();

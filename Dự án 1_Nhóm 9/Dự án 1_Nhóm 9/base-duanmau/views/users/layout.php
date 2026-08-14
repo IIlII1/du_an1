@@ -169,6 +169,29 @@ if (!empty($user['avatar'])) {
             padding: 7px;
         }
 
+        .logout-link {
+            display: block;
+
+            padding: 10px;
+
+            margin: 2px 0;
+
+            border-radius: 7px;
+
+            color: #ff9a9a;
+
+            font-size: 10px;
+
+            font-weight: 600;
+
+            transition: .2s;
+        }
+
+        .logout-link:hover {
+            background: rgba(255, 90, 90, 0.12);
+            color: #fff;
+        }
+
         .account-menu a {
             display: block;
 
@@ -687,7 +710,11 @@ if (!empty($user['avatar'])) {
                 href="?mode=users&action=comments"
                 class="<?= $currentAction === 'comments' ? 'active' : '' ?>"
             >
-                Bình luận
+                Đánh giá
+            </a>
+
+            <a href="?mode=client&action=logout" class="logout-link">
+                Đăng xuất
             </a>
 
         </div>

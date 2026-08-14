@@ -1,6 +1,6 @@
 <?php
 
-define('BASE_URL',          'http://localhost/D%e1%bb%b1%20%c3%a1n%201_Nh%c3%b3m%209/D%e1%bb%b1%20%c3%a1n%201_Nh%c3%b3m%209/base-duanmau/');
+define('BASE_URL',          'http://localhost/D%E1%BB%B1%20%C3%A1n%201_Nh%C3%B3m%209/D%E1%BB%B1%20%C3%A1n%201_Nh%C3%B3m%209/base-duanmau/');
 define('BASE_URL_ADMIN',          'http://localhost/D%E1%BB%B1%20%C3%A1n%201_Nh%C3%B3m%209/D%E1%BB%B1%20%C3%A1n%201_Nh%C3%B3m%209/base-duanmau/?mode=admin');
 define('BASE_URL_USERS',          'http://localhost/D%E1%BB%B1%20%C3%A1n%201_Nh%C3%B3m%209/D%E1%BB%B1%20%C3%A1n%201_Nh%C3%B3m%209/base-duanmau/?mode=users');
 

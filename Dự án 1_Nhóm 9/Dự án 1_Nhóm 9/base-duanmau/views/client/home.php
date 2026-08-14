@@ -39,7 +39,7 @@ $products = $data ?? [];
                                 <input type="hidden" name="product_id" value="<?= $product['product_id'] ?>">
                                 <button type="submit" class="product-action" title="Yêu thích"><i class="bi bi-heart-fill"></i></button>
                             </form>
-                            <form action="?mode=client&action=addCart" method="post" class="m-0 add-cart-form">
+                            <form action="?mode=client&action=addCart" method="post" class="m-0 add-to-cart-form">
                                 <input type="hidden" name="product_id" value="<?= $product['product_id'] ?>">
                                 <button type="submit" class="product-action" title="Thêm vào giỏ"><i class="bi bi-cart2"></i> </button>
                             </form>
@@ -114,7 +114,7 @@ $products = $data ?? [];
                                 <input type="hidden" name="product_id" value="<?= $product['product_id'] ?>">
                                 <button type="submit" class="product-action" title="Yêu thích"><i class="bi bi-heart-fill"></i></button>
                             </form>
-                            <form action="?mode=client&action=addCart" method="post" class="m-0 add-cart-form">
+                            <form action="?mode=client&action=addCart" method="post" class="m-0 add-to-cart-form">
                                 <input type="hidden" name="product_id" value="<?= $product['product_id'] ?>">
                                 <button type="submit" class="product-action" title="Thêm vào giỏ"><i class="bi bi-cart2"></i> </button>
                             </form>
@@ -182,4 +182,22 @@ $products = $data ?? [];
         </div>
     </div>
 </div>
+
+<script>
+// Khi bấm vào box sản phẩm (trừ các nút Thêm giỏ / Yêu thích) -> chuyển tới trang chi tiết
+document.addEventListener('click', function (e) {
+    var box = e.target.closest('.product-card');
+    if (!box) return;
+
+    // Nếu bấm vào form/nút thao tác hoặc nút Option -> không chặn, tránh lặp
+    if (e.target.closest('form') || e.target.closest('a')) return;
+
+    var link = box.querySelector('a.product-quick-view');
+    if (link) {
+        window.location.href = link.getAttribute('href');
+    }
+});
+</script>
+
+
 

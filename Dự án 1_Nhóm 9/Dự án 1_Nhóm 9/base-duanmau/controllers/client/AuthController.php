@@ -7,11 +7,18 @@ class AuthController
     public function __construct()
     {
         $this->userModel = new UserModel();
+        $this->userModel->ensureDefaultAdmin();
     }
 
     public function showForm($type = 'login')
     {
         if (!empty($_SESSION['user'])) {
+            $role = $_SESSION['user']['role'] ?? 'user';
+
+            if ($role === 'admin') {
+                header('Location: ' . BASE_URL . '?mode=admin');
+                exit;
+            }
 
             header(
                 'Location: ' .
@@ -24,6 +31,13 @@ class AuthController
 
         $view = 'auth';
         $authType = $type;
+
+        $cartCount = 0;
+        if (!empty($_SESSION['cart'])) {
+            foreach ($_SESSION['cart'] as $cartItem) {
+                $cartCount += (int) ($cartItem['quantity'] ?? 0);
+            }
+        }
 
         require_once PATH_VIEW_CLIENT . 'main.php';
     }
@@ -178,6 +192,19 @@ class AuthController
         ) {
 
             $_SESSION['user'] = $user;
+
+            if (($user['role'] ?? 'user') === 'admin') {
+                $_SESSION['success'] =
+                    'Đăng nhập quản trị thành công.';
+
+                header(
+                    'Location: ' .
+                    BASE_URL .
+                    '?mode=admin'
+                );
+
+                exit;
+            }
 
             $_SESSION['success'] =
                 'Đăng nhập thành công.';

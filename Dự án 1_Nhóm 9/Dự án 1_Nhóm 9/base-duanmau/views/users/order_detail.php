@@ -1,4 +1,15 @@
-﻿<h1 class="page-title">
+<?php
+$statusClassMap = [
+    'Chờ xác nhận' => 'badge-warning',
+    'Đã xác nhận' => 'badge-info',
+    'Đang giao' => 'badge-primary',
+    'Hoàn thành' => 'badge-success',
+    'Đã hủy' => 'badge-danger',
+];
+$badgeClass = $statusClassMap[$order['status']] ?? 'badge-secondary';
+?>
+
+<h1 class="page-title">
     Chi tiết đơn hàng
 </h1>
 

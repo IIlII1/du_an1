@@ -142,7 +142,15 @@ class UsersController
         $view = 'comments';
         $this->render($view, compact('user', 'comments'));
     }
-
+public function reviews()
+{
+    $this->ensureLoggedIn();
+    $user = $_SESSION['user'];
+    // Đảm bảo hàm hasReviewed đã có trong UserModel
+    $hasReviewed = $this->userModel->hasReviewed($user['user_id']); 
+    $view = 'reviews';
+    $this->render($view, compact('user', 'hasReviewed'));
+}
     public function addComment()
     {
         $this->ensureLoggedIn();
@@ -188,13 +196,6 @@ class UsersController
         exit;
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Kiểm tra email
-    |--------------------------------------------------------------------------
-    */
-
     $oldUser = $this->userModel->getByEmail($email);
 
     if ($oldUser && (int)$oldUser['user_id'] !== $userId) {
@@ -205,12 +206,6 @@ class UsersController
         exit;
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Avatar
-    |--------------------------------------------------------------------------
-    */
 
     $avatarName = $_SESSION['user']['avatar'] ?? null;
 
@@ -271,13 +266,6 @@ class UsersController
 
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Update database
-    |--------------------------------------------------------------------------
-    */
-
     $updated = $this->userModel->updateProfile(
         $userId,
         $name,
@@ -288,13 +276,6 @@ class UsersController
 
 
     if ($updated) {
-
-        /*
-        |--------------------------------------------------------------------------
-        | Cập nhật session
-        |--------------------------------------------------------------------------
-        */
-
         $newUser = $this->userModel->getById($userId);
 
         $_SESSION['user'] = [

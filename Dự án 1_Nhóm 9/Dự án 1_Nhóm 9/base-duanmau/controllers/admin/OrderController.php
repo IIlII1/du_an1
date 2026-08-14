@@ -12,8 +12,16 @@ class OrderController
     public function index()
     {
         $orders = $this->userModel->getAllOrders();
+        $statusClassMap = [
+            'Chờ xác nhận' => 'badge-warning',
+            'Đã xác nhận' => 'badge-info',
+            'Đang giao' => 'badge-primary',
+            'Hoàn thành' => 'badge-success',
+            'Đã hủy' => 'badge-danger',
+        ];
         require_once PATH_VIEW_ADMIN . 'order/index.php';
     }
+   
 
     public function detail()
     {
