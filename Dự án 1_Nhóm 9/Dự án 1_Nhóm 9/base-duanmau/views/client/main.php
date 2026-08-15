@@ -224,7 +224,7 @@
     <div class="header-panel">
         <a href="?mode=client" class="brand"><img src="https://inwfile.com/s-gn/_webp_max_images/300/300/2r/ot/34.webp" width="200" alt="KEEP:SILENT"></a>
         <div class="nav-group">
-            <a class="header-link" href="?mode=client">All Items</a>
+            <a class="header-link" href="#all-items">All Items</a>
             <a class="header-link" href="?mode=client">Collections</a>
             <a class="header-link" href="?mode=client&action=about">About Us</a>
             <a class="header-link" href="?mode=client&action=policy">Store Policies</a>
@@ -321,7 +321,7 @@
             <div class="footer-col">
                 <h6>Category</h6>
                 <ul>
-                    <li><a href="?mode=client">All Items</a></li>
+                    <li><a href="#all-items">All Items</a></li>
                     <li><a href="?mode=client&action=category&cate=Keep Tee">Keep Tee</a></li>
                     <li><a href="?mode=client&action=category&cate=Keep Sleeveless">Keep Sleeveless</a></li>
                     <li><a href="?mode=client&action=category&cate=Keep Bundle">Keep Bundle</a></li>

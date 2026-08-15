@@ -88,7 +88,7 @@ $products = $data ?? [];
 <!-- All Items -->
 <div class="container-fluid px-3 px-lg-4 py-5" id="all-items">
     <?php $showAll = !empty($_GET['show']) && $_GET['show'] === 'all'; ?>
-    <?php $previewItems = $showAll ? $data : array_slice($data, 0, 12); ?>
+    <?php $itemsToRender = $data ?? []; ?>
     <div class="d-flex justify-content-between align-items-center mb-4 flex-column flex-md-row gap-3">
         <div>
             <img src="https://inwfile.com/s-gn/_webp_max_images/1024/1024/s1/e1/js.webp" width="80px" alt="">
@@ -97,14 +97,15 @@ $products = $data ?? [];
         <?php if (!empty($_GET['q'])): ?>
             <div class="text-right">
                 <p class="mb-1 text-muted">Kết quả tìm kiếm cho: <strong><?= htmlspecialchars($_GET['q']) ?></strong></p>
-                <p class="mb-0 text-muted"><?= count($data) ?> sản phẩm được tìm thấy</p>
+                <p class="mb-0 text-muted"><?= count($itemsToRender) ?> sản phẩm được tìm thấy</p>
             </div>
         <?php endif; ?>
     </div>
 
     <div class="all-items-slider">
-        <?php foreach ($previewItems as $product): ?>
-            <div class="slider-item">
+        <?php foreach ($itemsToRender as $index => $product): ?>
+            <?php $isHidden = !$showAll && $index >= 12; ?>
+            <div class="slider-item<?= $isHidden ? ' all-items-hidden' : '' ?>">
                 <div class="product-card position-relative">
                     <?php $img = !empty($product['img']) ? BASE_ASSETS_UPLOADS . $product['img'] : 'dist/img/default-150x150.png'; $imgPath = !empty($product['img']) ? PATH_ROOT . 'assets/uploads/' . $product['img'] : ''; if (!empty($imgPath) && !file_exists($imgPath)) { $img = 'dist/img/default-150x150.png'; } ?>
                     <div class="product-thumb position-relative">
@@ -132,9 +133,9 @@ $products = $data ?? [];
         <?php endforeach; ?>
     </div>
 
-    <?php if (!$showAll && count($data) > 12): ?>
+    <?php if (count($itemsToRender) > 12): ?>
         <div class="text-center mt-3">
-            <a href="?mode=client&show=all" class="view-all-button">View All <span aria-hidden="true">→</span></a>
+            <a href="#all-items" class="view-all-button" data-view-all="true">View All <span aria-hidden="true">→</span></a>
         </div>
     <?php endif; ?>
 </div>
@@ -184,12 +185,10 @@ $products = $data ?? [];
 </div>
 
 <script>
-// Khi bấm vào box sản phẩm (trừ các nút Thêm giỏ / Yêu thích) -> chuyển tới trang chi tiết
 document.addEventListener('click', function (e) {
     var box = e.target.closest('.product-card');
     if (!box) return;
 
-    // Nếu bấm vào form/nút thao tác hoặc nút Option -> không chặn, tránh lặp
     if (e.target.closest('form') || e.target.closest('a')) return;
 
     var link = box.querySelector('a.product-quick-view');
@@ -197,6 +196,33 @@ document.addEventListener('click', function (e) {
         window.location.href = link.getAttribute('href');
     }
 });
+
+var allItemsToggle = document.querySelector('.view-all-button');
+if (allItemsToggle) {
+    allItemsToggle.addEventListener('click', function (event) {
+        event.preventDefault();
+
+        var section = document.getElementById('all-items');
+        if (!section) return;
+
+        var hiddenItems = section.querySelectorAll('.all-items-hidden');
+        hiddenItems.forEach(function (item) {
+            item.classList.remove('all-items-hidden');
+        });
+
+        var buttonText = this.querySelector('span');
+        if (buttonText) {
+            buttonText.textContent = '✓';
+        }
+
+        this.textContent = 'All items loaded';
+        this.setAttribute('aria-disabled', 'true');
+        this.style.pointerEvents = 'none';
+        this.style.opacity = '0.8';
+
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+}
 </script>
 
 
